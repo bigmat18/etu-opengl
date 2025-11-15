@@ -18,11 +18,16 @@ add_library(glad STATIC ${GLAD_SOURCE_DIR}/src/glad.c)
 target_include_directories(glad PUBLIC ${GLAD_SOURCE_DIR}/include)
 target_link_libraries(glad PUBLIC)
 
-
 # ========== CPPUtils setup ===========
 option(CPPUTILS_BUILD_EXAMPLES "CPPUtils build examples" OFF)
 option(CPPUTILS_USE_OPENMP "CPPUtils enable OpenMP" OFF)
 option(CPPUTILS_ENABLE_WARNINGS "CPPUtils enable recommended warnings" OFF)
 
 add_subdirectory(${EXTERNAL_DIR}/cpp-utils-lib)
+# ========== CPPUtils setup =========== 
+
+set(TARGET_LIB_NAME etu-opengl)
+#add_library(${TARGET_LIB_NAME})
+
+
 
