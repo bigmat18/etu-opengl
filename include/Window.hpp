@@ -1,0 +1,41 @@
+#pragma once
+#include <GLFW/glfw3.h>
+#include <string>
+
+#include <Types.hpp>
+
+namespace etugl {
+
+struct WindowProps {
+    u32 m_Width = 800;
+    u32 m_Height = 600;
+    std::string m_Title = "ETGL Window";
+    u32 m_BGColor = 0xFFFFFFFF;
+
+    float bg_r() const { return ((m_BGColor >> 24) & 0xFF) / 255.0f; }
+    float bg_g() const { return ((m_BGColor >> 16) & 0xFF) / 255.0f; }
+    float bg_b() const { return ((m_BGColor >> 8) & 0xFF) / 255.0f; }
+    float bg_a() const { return ((m_BGColor >> 0) & 0xFF) / 255.0f; }
+};
+
+class Window {
+    WindowProps m_Props;
+    GLFWwindow* m_Window;
+
+public:
+    Window(const WindowProps props = WindowProps());
+    ~Window();
+
+    Window(const Window& other) = delete;
+    Window(Window&& other) = delete;
+
+    bool is_closed() const;
+
+    void swap_buffers();
+
+    void clear_color(float r, float g, float b, float a);
+
+    void clear();
+};
+
+}
