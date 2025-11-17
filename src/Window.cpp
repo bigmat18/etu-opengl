@@ -17,7 +17,10 @@ Window::Window(const WindowProps props) : m_Props(props)
         glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
     #endif
 
-    massert(m_Window = glfwCreateWindow(m_Props.m_Width, m_Props.m_Width, m_Props.m_Title.c_str(), NULL, NULL),
+    massert(m_Window = glfwCreateWindow(m_Props.m_Width, 
+                                        m_Props.m_Width,
+                                        m_Props.m_Title.c_str(), 
+                                        NULL, NULL),
              "Error in window creation");
 
 
@@ -44,23 +47,6 @@ Window::Window(const WindowProps props) : m_Props(props)
 Window::~Window() {
     glfwDestroyWindow(m_Window);
     LOG_INFO("Window sucessfully destroyed");
-}
-
-bool Window::is_closed() const { 
-    return glfwWindowShouldClose(m_Window);
-}
-
-void Window::swap_buffers() {
-    glfwSwapBuffers(m_Window);
-    glfwPollEvents();
-}
-
-void Window::clear_color(float r, float g, float b, float a) {
-    glClearColor(r, g, b, a);
-};
-
-void Window::clear() {
-    glClear(GL_COLOR_BUFFER_BIT);
 }
 
 }

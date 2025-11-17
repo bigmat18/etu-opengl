@@ -27,15 +27,25 @@ public:
     ~Window();
 
     Window(const Window& other) = delete;
-    Window(Window&& other) = delete;
+    Window& operator=(const Window& other) = delete;
 
-    bool is_closed() const;
+    inline bool is_closed() const {
+        return glfwWindowShouldClose(m_Window);
+    }
 
-    void swap_buffers();
+    inline void swap_buffers() const {
+        glfwSwapBuffers(m_Window);
+        glfwPollEvents();
+    }
 
-    void clear_color(float r, float g, float b, float a);
+    inline void clear_color(float r, float g, float b, float a) const {
+        glClearColor(r, g, b, a);
+    }
 
-    void clear();
+    inline void clear() const {
+        glClear(GL_COLOR_BUFFER_BIT);
+    }
+
 };
 
 }
