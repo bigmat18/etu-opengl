@@ -17,9 +17,9 @@ public:
     Program(const Program& other) = delete;
     Program& operator=(const Program& other) = delete;
 
-    inline void bind() const;
+    inline void bind() const { glUseProgram(m_ID); };
 
-    inline void unbind() const;
+    inline void unbind() const { glUseProgram(0); };
 
     bool is_valid() const;
 };

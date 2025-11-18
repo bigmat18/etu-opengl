@@ -1,4 +1,5 @@
 #pragma once
+#include "debug.hpp"
 #include "logging.hpp"
 #include <cstddef>
 #include <ios>
@@ -22,10 +23,11 @@ class Shader {
 public:
     Shader(const fs::path& path) {
         m_ID = glCreateShader(T);
+
         const std::string shader_code = read_file(path);
         const std::string post_process_code = pre_process(shader_code);
-
         const char* final_code = post_process_code.c_str();
+
         glShaderSource(m_ID, 1, &final_code, NULL);
         glCompileShader(m_ID);
 

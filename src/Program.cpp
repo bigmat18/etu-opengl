@@ -19,7 +19,14 @@ Program::Program(const VertexShader& vert_shader, const FragmentShader& frag_sha
 Program::Program(const fs::path& vs_path, const fs::path& fs_path) {    
     const VertexShader vert(vs_path);
     const FragmentShader frag(fs_path);
-    Program(vert, frag);
+    
+    m_ID = glCreateProgram();
+    glAttachShader(m_ID, vert.get_ID());
+    glAttachShader(m_ID, frag.get_ID());
+    glLinkProgram(m_ID);
+
+    if (is_valid()) 
+        LOG_INFO("Program {} created", m_ID);
 }
 
 Program::~Program() {

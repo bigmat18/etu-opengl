@@ -1,4 +1,5 @@
 #pragma once
+#include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <string>
 
@@ -10,7 +11,7 @@ struct WindowProps {
     u32 m_Width = 800;
     u32 m_Height = 600;
     std::string m_Title = "ETGL Window";
-    u32 m_BGColor = 0xFFFFFFFF;
+    u32 m_BGColor = 0x000000FF;
 
     float bg_r() const { return ((m_BGColor >> 24) & 0xFF) / 255.0f; }
     float bg_g() const { return ((m_BGColor >> 16) & 0xFF) / 255.0f; }

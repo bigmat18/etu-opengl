@@ -1,10 +1,11 @@
 #pragma once
 
-#include <Buffers.hpp>
-#include "VertexLayout.hpp"
 #include <Types.hpp>
 #include <optional>
 #include <vector>
+
+#include <Buffers.hpp>
+#include <VertexLayout.hpp>
 
 namespace etugl {
 
@@ -14,23 +15,23 @@ class VerterArray {
     u32 m_ID;
 
 public:
+    VerterArray(const VertexBuffer& vbo, 
+                const IndexBuffer& ebo,
+                const VertexLayout layout);
 
     VerterArray(const std::vector<float>& vertices,
                 const std::vector<u32>& indices,
                 const VertexLayout layout);
 
-    VerterArray(const VertexBuffer& vbo, 
-                const IndexBuffer& ebo,
-                const VertexLayout layout);
 
     VerterArray(const VerterArray& other) = delete;
     VerterArray& operator=(const VerterArray& other) = delete;
 
     ~VerterArray();
 
-    inline void bind() const;
+    inline void bind() const { glBindVertexArray(m_ID); }
 
-    inline void unbind() const;
+    inline void unbind() const { glBindVertexArray(0); }
 };
 
 }

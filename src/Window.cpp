@@ -1,5 +1,3 @@
-#include <GL/gl.h>
-#include <GLFW/glfw3.h>
 #include <Window.hpp>
 #include <utils.hpp>
 
@@ -27,8 +25,11 @@ Window::Window(const WindowProps props) : m_Props(props)
     LOG_INFO("Window sucessfully created");
     glfwMakeContextCurrent(m_Window);
 
-    const char* vendor = reinterpret_cast<const char*>(glGetString(GL_RENDERER));
-    const char* renderer = reinterpret_cast<const char*>(glGetString(GL_VENDOR));
+    massert(gladLoadGL(), "Error to initialize GLAD");
+    LOG_INFO("GLAD successfully loaded");
+
+    const char* vendor = reinterpret_cast<const char*>(glGetString(GL_VENDOR));
+    const char* renderer = reinterpret_cast<const char*>(glGetString(GL_RENDERER));
     const char* version = reinterpret_cast<const char*>(glGetString(GL_VERSION));
 
     LOG_INFO("GL Vendor          : {}", vendor);

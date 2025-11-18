@@ -1,5 +1,6 @@
 #pragma once
 
+#include "debug.hpp"
 #include <vector>
 #include <glad/glad.h>
 
@@ -11,16 +12,15 @@ namespace etugl {
 
 template <GLenum type, typename T>
 class Buffer {
-    u32 m_ID;
+    u32 m_ID = 0;
 
 public:
-    Buffer(const std::vector<T>& vertices) {
-
-        massert(!vertices.empty(), "VertexBuffer can not be empty");
+    Buffer(const std::vector<T>& data) {
+        massert(!data.empty(), "VertexBuffer can not be empty");
         glGenBuffers(1, &m_ID);
         glBindBuffer(type, m_ID);
-        glBufferData(type, vertices.size() * sizeof(T), 
-                     vertices.data(), GL_STATIC_DRAW);
+        glBufferData(type, data.size() * sizeof(T), 
+                     data.data(), GL_STATIC_DRAW);
 
         if(glGetError() != GL_NO_ERROR) {
             glDeleteBuffers(1, &m_ID);
@@ -28,13 +28,24 @@ public:
         }
 
         glBindBuffer(type, 0);
-        LOG_INFO("VertexBuffer with ID {} created", m_ID);
+        if constexpr (type == GL_ARRAY_BUFFER) {
+            LOG_INFO("VertexBuffer with ID {} created", m_ID); 
+        } else {
+            LOG_INFO("IndiexBuffer with ID {} created", m_ID); 
+        }
     };
 
     Buffer(const Buffer& other) = delete;
     Buffer& operator=(const Buffer& other) = delete;
 
-    ~Buffer();
+    ~Buffer() {
+        if constexpr (type == GL_ARRAY_BUFFER) {
+            LOG_INFO("VertexBuffer with ID {} deleted", m_ID); 
+        } else {
+            LOG_INFO("IndiexBuffer with ID {} deleted", m_ID); 
+        }
+        glDeleteBuffers(1, &m_ID);
+    }
 
     inline void bind() const {
         glBindBuffer(type, m_ID);
