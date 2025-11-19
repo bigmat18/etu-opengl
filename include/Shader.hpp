@@ -1,5 +1,4 @@
 #pragma once
-#include "logging.hpp"
 #include <cstddef>
 #include <ios>
 #include <regex>

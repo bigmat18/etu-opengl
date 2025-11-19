@@ -1,7 +1,7 @@
 #pragma once
 
-#include "glm/fwd.hpp"
 #include <cstdint>
+#include <glm/glm.hpp>
 
 namespace etugl {
     using u8    = uint8_t; 
@@ -18,6 +18,16 @@ namespace etugl {
     using vec2f = glm::vec2;
     using vec3f = glm::vec3;
     using vec4f = glm::vec4;
+
+    using vec1i = glm::ivec2;
+    using vec2i = glm::ivec3;
+    using vec3i = glm::ivec3;
+    using vec4i = glm::ivec4;
+
+    using vec1u = glm::uvec2;
+    using vec2u = glm::uvec3;
+    using vec3u = glm::uvec3;
+    using vec4u = glm::uvec4;
 
     using mat2f = glm::mat2;
     using mat3f = glm::mat3;

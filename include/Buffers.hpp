@@ -1,6 +1,5 @@
 #pragma once
 
-#include "debug.hpp"
 #include <vector>
 #include <glad/glad.h>
 

@@ -10,22 +10,22 @@ void VertexLayout::bind() const {
 
     for (const auto& element : m_Elements) {
         glEnableVertexAttribArray(element.m_Location);
-        const void* ptr = (const void*)(uintptr_t)element.m_Offset;
+        const void* ptr = (const void*)static_cast<uintptr_t>(element.m_Offset);
 
         if (!element.m_IsInteger) {
           glVertexAttribPointer(
               element.m_Location,
-              (GLint)element.m_Components,
+              static_cast<GLint>(element.m_Components),
               element.m_GLType,
               element.m_Normalized ? GL_TRUE : GL_FALSE,
-              (GLsizei)m_Stride,
+              static_cast<GLsizei>(m_Stride),
               ptr);
         } else {
           glVertexAttribIPointer(
               element.m_Location,
-              (GLint)element.m_Components,
+              static_cast<GLint>(element.m_Components),
               element.m_GLType,
-              (GLsizei)m_Stride,
+              static_cast<GLsizei>(m_Stride),
               ptr);
         }
     }

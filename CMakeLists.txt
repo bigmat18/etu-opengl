@@ -27,8 +27,9 @@ add_subdirectory(${EXTERNAL_DIR}/glm)
 
 set(TARGET_LIB_NAME etu-opengl)
 file(GLOB_RECURSE CPP_SOURCES ${SRC_DIR}/*.cpp)
-add_library(${TARGET_LIB_NAME} ${CPP_SOURCES})
+add_library(${TARGET_LIB_NAME} ${CPP_SOURCES} ${EXTERNAL_DIR}/stb_image/stb_image_impl.cpp)
 target_include_directories(${TARGET_LIB_NAME} PUBLIC ${INCLUDE_DIR})
+target_include_directories(${TARGET_LIB_NAME} PUBLIC ${EXTERNAL_DIR}/stb_image)
 target_link_libraries(${TARGET_LIB_NAME} PUBLIC 
     glad 
     glfw

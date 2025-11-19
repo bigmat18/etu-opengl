@@ -12,9 +12,10 @@ target_include_directories(${EXE_NAME} PUBLIC ${SUBDIR_PATH})
 
 if (GLSL_FILES)
     add_custom_command(TARGET ${EXAMPLE_NAME} POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        COMMAND ${CMAKE_COMMAND} -E copy
                 ${GLSL_FILES}
                 $<TARGET_FILE_DIR:${EXAMPLE_NAME}>
-        COMMENT "Copy of all .glsl files in ${EXAMPLE_NAME}"
+        COMMENT "Copy all .glsl files in ${EXAMPLE_NAME}"
     )
 endif()
+
