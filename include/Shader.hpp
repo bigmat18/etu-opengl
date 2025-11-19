@@ -1,5 +1,4 @@
 #pragma once
-#include "debug.hpp"
 #include "logging.hpp"
 #include <cstddef>
 #include <ios>

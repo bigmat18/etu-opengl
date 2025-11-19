@@ -8,24 +8,27 @@
 #include <filesystem>
 #include <vector>
 
+static const std::vector<float> vertices = 
+{
+    -1.0f, -1.0f, 0.0f,
+    1.0f, -1.0f, 0.0f,
+    0.0f, 1.0f, 0.0f
+};
+
+static const std::vector<etugl::u32> indices = 
+{
+    0, 1, 2
+};
+
 
 int main (int argc, char** argv) {
-    fs::path path = fs::path(std::string(argv[argc-1])).parent_path();
+    const fs::path path = fs::path(std::string(argv[argc-1])).parent_path();
 
     etugl::Window window = etugl::Window();
-    std::vector<float> vertices = {
-        -1.0f, -1.0f, 0.0f,
-        1.0f, -1.0f, 0.0f,
-        0.0f, 1.0f, 0.0f
-    };
-    std::vector<etugl::u32> indices = {
-        0, 1, 2
-    };
-
     etugl::VerterArray vao(
         vertices, indices, 
         etugl::VertexLayout()
-            .add(0, etugl::LayoutData::Type::Float3)
+            .add<etugl::LayoutType::Float3>(0)
     );
 
     etugl::Program program(path/"vs.glsl", path/"fs.glsl");
@@ -34,7 +37,7 @@ int main (int argc, char** argv) {
         window.clear();
         program.bind();
         vao.bind();
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+        glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
         window.swap_buffers();
     }
 

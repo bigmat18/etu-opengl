@@ -1,121 +1,87 @@
 #pragma once
 
-#include <cstdint>
+#include <concepts>
+#include <cstddef>
 #include <glad/glad.h>
 #include <Types.hpp>
 #include <utils.hpp>
 
 namespace etugl {
 
-struct LayoutData {
-    enum class Type {
-        None = 0, 
-        Float, Float2, Float3, Float4, 
-        Int, Int2, Int3, Int4, 
-        Mat2, Mat3, Mat4, 
-        Bool
-    };
+class LayoutType {
 
-    constexpr LayoutData() : m_Type(Type::None) {}
-    constexpr LayoutData(Type type) : m_Type(type) {}
-
-    [[nodiscard]] constexpr u32 size() const {
-        switch (m_Type){
-            case Type::Float:     return 4;
-            case Type::Float2:    return 4 * 2;
-            case Type::Float3:    return 4 * 3;
-            case Type::Float4:    return 4 * 4;
-            case Type::Mat2:      return 4 * 2 * 2;
-            case Type::Mat3:      return 4 * 3 * 3;
-            case Type::Mat4:      return 4 * 4 * 4;
-            case Type::Int:       return 4;
-            case Type::Int2:      return 4 * 2;
-            case Type::Int3:      return 4 * 3;
-            case Type::Int4:      return 4 * 4;
-            case Type::Bool:      return 1;
-            default:
-                LOG_WARN("GLType None not supported");
-                return 0;
-        }
-        LOG_WARN("Unknown LayoutData type in size()");
-        __builtin_unreachable();
-        return 0; 
-    };
-
-    [[nodiscard]] constexpr u32 componets() const {
-        switch (m_Type){
-            case Type::Float:     return 1;
-            case Type::Float2:    return 2;
-            case Type::Float3:    return 3;
-            case Type::Float4:    return 4;
-            case Type::Mat2:      return 2 * 2;
-            case Type::Mat3:      return 3 * 3;
-            case Type::Mat4:      return 4 * 4;
-            case Type::Int:       return 1;
-            case Type::Int2:      return 2;
-            case Type::Int3:      return 3;
-            case Type::Int4:      return 4;
-            case Type::Bool:      return 1;
-            default:
-                LOG_WARN("GLType None not supported");
-                return 0;
-        }
-        LOG_WARN("Unknown LayoutData type in size()");
-        __builtin_unreachable();
-        return 0; 
-    };
-
-    [[nodiscard]] constexpr GLenum gl_type() const {
-        switch (m_Type) {
-            case Type::Float:   return GL_FLOAT;
-            case Type::Float2:  return GL_FLOAT;
-            case Type::Float3:  return GL_FLOAT;
-            case Type::Float4:  return GL_FLOAT;
-            case Type::Mat2:    return GL_FLOAT; 
-            case Type::Mat3:    return GL_FLOAT;
-            case Type::Mat4:    return GL_FLOAT;
-            case Type::Int:     return GL_INT;
-            case Type::Int2:    return GL_INT;
-            case Type::Int3:    return GL_INT;
-            case Type::Int4:    return GL_INT;
-            case Type::Bool:    return GL_BOOL;
-            default:            
-                LOG_WARN("GLType None not supported");
-                return 0;
-        }
-        LOG_WARN("Unknown LayoutData type in size()");
-        __builtin_unreachable();
-        return 0;
-    };
-
-    [[nodiscard]] constexpr bool is_integer() const {
-        return m_Type == Type::Int || m_Type == Type::Int2 || 
-               m_Type == Type::Int3 || m_Type == Type::Int4;
-    }
+    template <GLenum type, size_t bytes, u32 num>
+    struct Type {
+        [[nodiscard]] static constexpr u32 size() {return bytes*num; }
+        
+        [[nodiscard]] static constexpr u32 components() {return num;}
+       
+        [[nodiscard]] static constexpr u32 gl_type() {return type;}
     
-private:
-    Type m_Type;
-};
+        [[nodiscard]] static constexpr bool is_integer() {
+            return type == GL_INT || type == GL_BOOL;
+        }
+    };
 
+public:
+    using Float  = Type<GL_FLOAT, sizeof(float), 1>;
+    using Float2 = Type<GL_FLOAT, sizeof(float), 2>;
+    using Float3 = Type<GL_FLOAT, sizeof(float), 3>;
+    using Float4 = Type<GL_FLOAT, sizeof(float), 4>;
+
+
+    using Int  = Type<GL_INT, sizeof(int), 1>;
+    using Int2 = Type<GL_INT, sizeof(int), 2>;
+    using Int3 = Type<GL_INT, sizeof(int), 3>;
+    using Int4 = Type<GL_INT, sizeof(int), 4>;
+
+    using Bool  = Type<GL_BOOL, sizeof(bool), 1>;
+};
 
 class VertexLayout {
 
 public:
     struct VertexElement {
-        u32 m_Location;     // Index (position in shader)
-        LayoutData m_Data;  // Type of data 
-        bool m_Normalized;  // If data should be normalized
-        u32 m_Offset;       // Local stride  
+        u32 m_Location;    // shader location
+        u32 m_Components;  // number of components (1..4)
+        GLenum m_GLType;   // GL_FLOAT, GL_INT, ...
+        bool m_Normalized; // only meaningful for integer->float via glVertexAttribPointer
+        u32 m_Offset;      // byte offset within vertex
+        bool m_IsInteger;  // use glVertexAttribIPointer when true
     }; 
  
     VertexLayout() = default; 
     ~VertexLayout() = default; 
- 
-    VertexLayout& add(const u32 location,
-                      const LayoutData::Type type, 
-                      const bool normalized = false);
- 
 
+    template <typename T> requires requires {
+        { T::size() } -> std::convertible_to<u32>;
+        { T::components() } -> std::convertible_to<u32>;
+        { T::gl_type() } -> std::convertible_to<GLenum>;
+        { T::is_integer() } -> std::same_as<bool>;
+    }
+    VertexLayout& add(const u32 location,
+                      const bool normalized = false) 
+    {
+        constexpr u32 comps = T::components();
+        constexpr u32 size = T::size();
+        constexpr GLenum type = T::gl_type();
+        constexpr bool is_integer = T::is_integer();
+
+        const u32 offset = m_Stride;
+
+        m_Elements.push_back(VertexElement{
+            .m_Location = location,
+            .m_Components = comps,
+            .m_GLType = type,
+            .m_Normalized = normalized,
+            .m_Offset = offset,
+            .m_IsInteger = is_integer,
+        });
+
+        m_Stride += size;
+        return *this;
+    }
+ 
     void bind() const;
 
 private:
