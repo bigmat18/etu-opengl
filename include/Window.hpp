@@ -34,19 +34,7 @@ public:
         return glfwWindowShouldClose(m_Window);
     }
 
-    inline void swap_buffers() const {
-        glfwSwapBuffers(m_Window);
-        glfwPollEvents();
-    }
-
-    inline void clear_color(float r, float g, float b, float a) const {
-        glClearColor(r, g, b, a);
-    }
-
-    inline void clear() const {
-        glClear(GL_COLOR_BUFFER_BIT);
-    }
-
+    inline void swap() const { glfwSwapBuffers(m_Window); }
 };
 
 }

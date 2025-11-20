@@ -3,14 +3,13 @@
 #include "Texture.hpp"
 #include "Types.hpp"
 #include "glm/gtc/type_ptr.hpp"
-#include "logging.hpp"
 #include <Shader.hpp>
 #include <filesystem>
 
 namespace etugl {
 
 class Program {
-    u32 m_ID;
+    u32 m_ID = 0;
 
 public:
     Program(const VertexShader& vert_shader, const FragmentShader& frag_shader);

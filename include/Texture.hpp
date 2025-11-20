@@ -38,12 +38,13 @@ public:
         glTexImage2D(T, 0, GL_RGBA, m_Width, m_Height, 0, GL_RGBA, GL_UNSIGNED_BYTE, buffer);
         glBindTexture(T, 0);
         stbi_image_free(buffer);
-        LOG_INFO("Texture {} creation: SUCCESS", m_ID);
+        LOG_INFO("Texture {} create: SUCCESS", m_ID);
     }
 
     ~Texture() {
-        LOG_INFO("Texture {} delete: SUCCESS", m_ID);
+        u32 id = m_ID;
         glDeleteTextures(1, &m_ID);
+        LOG_INFO("Texture {} destroy: SUCCESS", id);
     }
 
     Texture(const Texture& other) = delete;
@@ -58,7 +59,7 @@ public:
 
     inline void set_parameter(GLenum pname, GLfloat param) const {
         glTexParameteri(T, pname, param);
-        LOG_INFO("In Texture {} set parameter: {} = {}", m_ID, pname, param);
+        LOG_INFO("Texture {} set parameter: {} = {}", m_ID, pname, param);
     }
 
     [[nodiscard]] inline u32 width() const noexcept { return m_Width; }

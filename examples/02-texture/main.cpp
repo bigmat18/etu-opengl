@@ -49,12 +49,15 @@ int main (int argc, char *argv[]) {
 
     // Renderer loop
     while (!window.is_closed()) {
-        window.clear();
+        glClear(GL_COLOR_BUFFER_BIT);
+
         texture.bind();
         program.bind();
         vao.bind();
         glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
-        window.swap_buffers();
+
+        window.swap();
+        glfwPollEvents();
     }
 
     return 0;

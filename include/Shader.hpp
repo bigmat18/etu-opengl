@@ -29,14 +29,14 @@ public:
         glShaderSource(m_ID, 1, &final_code, NULL);
         glCompileShader(m_ID);
 
-        if(is_valid())
-            LOG_INFO("Shader {} created", m_ID);
+        if(is_valid()) LOG_INFO("Shader {} create: SUCCESS", m_ID);
     }
 
 
     ~Shader() {
-        LOG_INFO("Shader {} deleted", m_ID);
+        u32 id = m_ID;
         glDeleteShader(m_ID);
+        LOG_INFO("Shader {} destroy: SUCCESS", id);
     }
 
     Shader(const Shader& other) = delete;

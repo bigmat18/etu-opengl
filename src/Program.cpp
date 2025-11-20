@@ -12,8 +12,7 @@ Program::Program(const VertexShader& vert_shader, const FragmentShader& frag_sha
     glAttachShader(m_ID, frag_shader.get_ID());
     glLinkProgram(m_ID);
 
-    if (is_valid()) 
-        LOG_INFO("Program {} created", m_ID);
+    if (is_valid()) LOG_INFO("Program {} create: SUCCESS", m_ID);
 }
 
 Program::Program(const fs::path& vs_path, const fs::path& fs_path) {    
@@ -25,8 +24,7 @@ Program::Program(const fs::path& vs_path, const fs::path& fs_path) {
     glAttachShader(m_ID, frag.get_ID());
     glLinkProgram(m_ID);
 
-    if (is_valid()) 
-        LOG_INFO("Program {} created", m_ID);
+    if (is_valid()) LOG_INFO("Program {} create: SUCCESS", m_ID);
 }
 
 Program::~Program() {
