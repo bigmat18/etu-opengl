@@ -26,7 +26,7 @@ int main (int argc, char *argv[]) {
     const fs::path path = fs::path(std::string(argv[argc-1])).parent_path();
 
     // Window creation with OpenGL context
-    etugl::Window window = etugl::Window();
+    etugl::Window window = etugl::WinNoCamera();
 
     // Create vao with VBO + EBO + Layout
     etugl::VerterArray vao(
