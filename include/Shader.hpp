@@ -74,7 +74,8 @@ public:
         return compiled == GL_TRUE;
     }
 
-    inline u32 get_ID() const noexcept { return m_ID; }
+    [[nodiscard]] inline u32 get_ID() const noexcept { return m_ID; }
+
 private:
     std::string read_file(const fs::path& path) {
         std::ifstream file(path, std::ios::binary);

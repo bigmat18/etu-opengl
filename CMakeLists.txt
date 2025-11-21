@@ -11,8 +11,8 @@ set(SRC_DIR         ${CMAKE_CURRENT_SOURCE_DIR}/src)
 set(EXAMPLES_DIR    ${CMAKE_CURRENT_SOURCE_DIR}/examples)
 set(GLAD_SOURCE_DIR ${EXTERNAL_DIR}/glad)
 
-find_package(glfw3 REQUIRED)
 find_package(OpenGL REQUIRED)
+find_package(glfw3 REQUIRED)
 
 add_library(glad STATIC ${GLAD_SOURCE_DIR}/src/glad.c)
 target_include_directories(glad PUBLIC ${GLAD_SOURCE_DIR}/include)
@@ -23,6 +23,7 @@ option(CPPUTILS_ENABLE_WARNINGS "CPPUtils enable recommended warnings" OFF)
 option(ETUGL_BUILD_EXAMPLES "ETUOpenGL build examples" ON)
 
 add_subdirectory(${EXTERNAL_DIR}/cpp-utils-lib)
+add_subdirectory(${EXTERNAL_DIR}/tinyobjloader)
 add_subdirectory(${EXTERNAL_DIR}/glm)
 
 set(TARGET_LIB_NAME etu-opengl)
@@ -36,6 +37,7 @@ target_link_libraries(${TARGET_LIB_NAME} PUBLIC
     glm::glm
     cpp-utils-lib
     OpenGL::GL
+    tinyobjloader
 )
 
 if (ETUGL_BUILD_EXAMPLES)
