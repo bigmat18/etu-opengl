@@ -18,6 +18,9 @@ requires (std::is_same_v<T, void> || std::is_base_of_v<Camera, T>)
 class Win { 
 protected:
     T m_Camera;
+
+public:
+    T& camera() { return m_Camera; }
 };
 
 template <>
@@ -43,6 +46,7 @@ class Window : public detail::Win<T> {
 
     WindowProps m_Props;
     GLFWwindow* m_Window;
+    float m_DeltaTime = 0;
 
 public:
     Window(const WindowProps props = WindowProps());
@@ -52,15 +56,38 @@ public:
     Window(const Window& other) = delete;
     Window& operator=(const Window& other) = delete;
 
-    inline bool is_closed() const {
-        return glfwWindowShouldClose(m_Window);
-    }
+    inline bool is_closed() const { return glfwWindowShouldClose(m_Window); }
 
     inline void swap() const { glfwSwapBuffers(m_Window); }
+
+    inline float delta_time() const { return m_DeltaTime; }
+
+    void update() {
+        static float last_time = 0.0f;
+
+        float current_time = static_cast<float>(glfwGetTime());
+        m_DeltaTime = current_time - last_time;
+        last_time = current_time;
+
+        if constexpr (HasT) {
+            static constexpr int keys[] = {
+                GLFW_KEY_W, GLFW_KEY_S, GLFW_KEY_A, GLFW_KEY_D,
+                GLFW_KEY_SPACE, GLFW_KEY_LEFT_SHIFT
+            };
+    
+            auto get_pressed = [&](GLFWwindow* w) -> int {
+                for (int k : keys)
+                    if (glfwGetKey(w, k) == GLFW_PRESS) return k;
+                return -1;
+            };
+    
+            if (int key = get_pressed(m_Window); key != -1)
+                detail::Win<T>::m_Camera.update_position(m_DeltaTime, key);
+        }
+    }
 };
 
 
-    
 using WinNoCamera       = Window<void>;
 using WinOrtographic    = Window<Ortographic>;
 using WinPerspective    = Window<Perspective>;

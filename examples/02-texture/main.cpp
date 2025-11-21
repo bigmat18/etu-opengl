@@ -53,8 +53,7 @@ int main (int argc, char *argv[]) {
 
         texture.bind();
         program.bind();
-        vao.bind();
-        glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
+        vao.draw();
 
         window.swap();
         glfwPollEvents();

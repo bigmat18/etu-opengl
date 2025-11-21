@@ -19,6 +19,11 @@ class Camera {
     float m_MovementSpeed = 2.5f;   
     float m_MouseSensitivity = 0.1f;
 
+protected:
+
+    int m_Width;
+    int m_Height;
+
 public: 
 
     Camera() = default;
@@ -36,11 +41,15 @@ public:
  
     void update_position(float delta_time, int key);
  
-    void update_front(float delta_time, float new_x, float new_y);  
+    void update_front(float new_x, float new_y);  
 
     float& movemet_speed() { return m_MovementSpeed; }
 
     float& mouse_sensitivity() { return m_MouseSensitivity; }
+
+    int& width() { return m_Width; }
+
+    int& height() { return m_Height; }
 };
 
 class Ortographic : public Camera {
@@ -70,7 +79,7 @@ public:
     float& right() { return m_Right; }
 
     float& bottom() { return m_Bottom; }
-
+ 
     float& top() { return m_Top; }
 };
 
@@ -80,23 +89,19 @@ class Perspective : public Camera {
     float m_NearClip = 0.1f;
     float m_FarClip = 100.0f;
 
-    float m_Width;
-    float m_Height;
-
 public:
     Perspective() = default;
 
-    Perspective(float width, float height) : 
-        Camera(), m_Width(width), m_Height(height) {};
-
-    Perspective(float width, float height, float mov_speed, float mouse_sens) : 
-        Camera(mov_speed, mouse_sens), m_Width(width), m_Height(height) {};
+    Perspective(float mov_speed, float mouse_sens) : 
+        Camera(mov_speed, mouse_sens) {};
 
     [[nodiscard]] inline mat4f projection() const override {
-        return glm::perspective(glm::radians(m_FOV), m_Width / m_Height, m_NearClip, m_FarClip);
+        return glm::perspective(glm::radians(m_FOV), 
+                                (float)(m_Width) / (float)(m_Height), 
+                                m_NearClip, m_FarClip);
     }
 
-    void update_fov(float delta_time, float offset_y);
+    void update_fov(float offset_y);
 };
  
 }

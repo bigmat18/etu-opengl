@@ -21,7 +21,7 @@ void Camera::update_position(float delta_time, int key) {
             break;
 
         case GLFW_KEY_A:
-            m_Position += (speed * glm::normalize(glm::cross(m_Front, m_Up)));
+            m_Position -= (speed * glm::normalize(glm::cross(m_Front, m_Up)));
             break;
 
         case GLFW_KEY_D:
@@ -38,7 +38,7 @@ void Camera::update_position(float delta_time, int key) {
     }
 }
 
-void Camera::update_front(float delta_time, float new_x, float new_y) {
+void Camera::update_front(float new_x, float new_y) {
     static bool init_camera = true;
     static float last_x = 0.0f;
     static float last_y = 0.0f;
@@ -68,7 +68,7 @@ void Camera::update_front(float delta_time, float new_x, float new_y) {
     ));   
 }
     
-void Perspective::update_fov(float delta_time, float offset_y) {
+void Perspective::update_fov(float offset_y) {
     m_FOV -= offset_y;
     if (m_FOV < 1.0f) m_FOV = 1.0f;
     if (m_FOV < 45.0f) m_FOV = 45.0f;

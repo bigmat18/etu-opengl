@@ -46,16 +46,38 @@ Window<T>::Window(const WindowProps props) : m_Props(props)
     glClearColor(m_Props.bg_r(), m_Props.bg_g(), m_Props.bg_b(), m_Props.bg_a());
     glfwSetWindowUserPointer(m_Window, this);
 
+    LOG_DEBUG("Window {}: setup window resize callback", window);
+    glfwSetWindowSizeCallback(this->m_Window, [](GLFWwindow* window, int width, int height) {
+        auto* self = static_cast<Window<T>*>(glfwGetWindowUserPointer(window));
+        self->m_Props.m_Width = width;
+        self->m_Props.m_Height = height;
+
+        if constexpr (HasT) {
+            self->m_Camera.width() = width;
+            self->m_Camera.height() = height;
+        }
+
+        glViewport(0, 0, width, height);
+    });
+
     if constexpr (HasT) {
+        glfwSetInputMode(m_Window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
-        LOG_DEBUG("Window {}: setup set key callback", window);
-        glfwSetKeyCallback(m_Window, [](GLFWwindow* window, int key, int scancode, int action, int mods) {
-            if (action != GLFW_PRESS) 
-                return;
-
+        LOG_DEBUG("Window {}: setup cursor pos callback", window);
+        glfwSetCursorPosCallback(m_Window, [](GLFWwindow* window, double pos_x, double pos_y) {
             auto* self = static_cast<Window<T>*>(glfwGetWindowUserPointer(window));
-            self->m_Camera.update_position(0, key);
+            self->m_Camera.update_front(static_cast<float>(pos_x), static_cast<float>(pos_y));
         });
+
+
+        if constexpr (std::is_same_v<T, Perspective>) {
+
+            LOG_DEBUG("Window {}: setup scroll callback", window);
+            glfwSetScrollCallback(m_Window, [](GLFWwindow *window, double offset_x, double offset_y) {
+                auto* self = static_cast<Window<T>*>(glfwGetWindowUserPointer(window));
+                self->m_Camera.update_fov(offset_y);
+            });
+        } 
     }
 }
 
