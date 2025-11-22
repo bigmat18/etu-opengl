@@ -4,7 +4,7 @@
 #include <Types.hpp>
 #include <VertexArray.hpp>
 #include <VertexLayout.hpp>
-#include <GL/gl.h>
+
 #include <Window.hpp>
 #include <filesystem>
 #include <vector>

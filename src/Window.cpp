@@ -39,7 +39,7 @@ Window<T>::Window(const WindowProps props) : m_Props(props)
     LOG_DEBUG("GL Version (string): {}", version);
 
     #ifdef __APPLE__
-        const char *glslVersion = reinterpret_cast<const char*>(glGetStringI(GL_SHADING_LANGUAGE_VERSION));
+        const char *glslVersion = reinterpret_cast<const char*>(glGetString(GL_SHADING_LANGUAGE_VERSION));
         LOG_DEBUG("GLSL Version: {}", glslVersion);
     #endif
 
