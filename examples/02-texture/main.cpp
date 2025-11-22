@@ -7,6 +7,7 @@
 
 #include <Window.hpp>
 #include <filesystem>
+#include <print>
 #include <vector>
 
 static const std::vector<float> vertices = {

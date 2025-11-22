@@ -105,7 +105,17 @@ public:
 
             size_t vi = 0;
             size_t ii = 0;
+            std::unordered_map<u32, u32> duplicate_vertices;
+
             for (const auto& idx : shapes[s].mesh.indices) {
+                if (idx.vertex_index >= 0) {
+                    auto it = duplicate_vertices.find(idx.vertex_index);
+                    if (it != duplicate_vertices.end()) {
+                        indices.push_back(it->second);
+                        continue;
+                    }
+                }
+
                 if (idx.vertex_index >= 0) {
                     size_t vidx = 3 * static_cast<size_t>(idx.vertex_index);
                     vertices[vi++] = attrib.vertices[vidx + 0];
@@ -126,12 +136,21 @@ public:
                     vertices[vi++] = attrib.texcoords[tidx + 1];
                 } else vi+=2;
 
-                indices.push_back(vertex_offset + static_cast<u32>(ii++));
+                indices.push_back(static_cast<u32>(ii));
+                duplicate_vertices[idx.vertex_index] = ii;
+                ii++;
             }
 
+            vertices.resize(vi);
+            vertices.shrink_to_fit();
+            indices.shrink_to_fit();
+
+            u32 num_vertices = vertices.size() / 8;
             vertex_offset += static_cast<u32>(num_indices);
             m_Meshes.emplace_back(label, vertices, indices);
             LOG_INFO("Mesh {} in {} loading: SUCCESS", vertex_offset, path_str);
+            LOG_INFO("Mesh {} Vertices loaded: {}", path_str, num_vertices);
+            LOG_INFO("Mesh {} Indices loaded: {}", path_str, num_indices);
             vertex_offset++;
         }
     }
