@@ -21,8 +21,8 @@ class Camera {
 
 protected:
 
-    int m_Width;
-    int m_Height;
+    int m_Width = 1.0f;
+    int m_Height = 1.0f;
 
 public: 
 

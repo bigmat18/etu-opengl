@@ -47,6 +47,7 @@ int main (int argc, char *argv[]) {
 
     glEnable(GL_DEPTH_TEST);
 
+    vao.bind();
     // Create program with VertexShader + FragmentShader
     etugl::Program program(path/"vs.glsl", path/"fs.glsl");
 

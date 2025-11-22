@@ -53,6 +53,8 @@ public:
     friend void swap(Mesh& first, Mesh& second) { first.swap(second); }
 
     inline void draw() const noexcept { m_VAO.draw(); }
+
+    inline void bind() const noexcept { m_VAO.bind(); }
 };
 
 class Model {
@@ -137,6 +139,11 @@ public:
     inline void draw() const noexcept {
         for (const auto& m : m_Meshes) 
             m.draw();
+    }
+
+    inline void bind() const noexcept {
+        for (const auto& m : m_Meshes) 
+            m.bind();
     }
 };
 

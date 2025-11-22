@@ -17,6 +17,7 @@ int main (int argc, char *argv[]) {
     etugl::Camera& camera = window.camera();
 
     etugl::Model mesh(path/"assets/bunny.obj"); 
+    mesh.bind();
 
     glEnable(GL_DEPTH_TEST);
 
