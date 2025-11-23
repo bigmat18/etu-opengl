@@ -30,7 +30,7 @@ int main (int argc, char *argv[]) {
     etugl::Window window = etugl::WinNoCamera();
 
     // Create vao with VBO + EBO + Layout
-    etugl::VerterArray vao(
+    etugl::VertexArray vao(
         vertices, indices, 
         etugl::VertexLayout()
             .add<etugl::LayoutType::Float3>(0)

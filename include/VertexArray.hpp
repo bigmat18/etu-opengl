@@ -11,7 +11,7 @@
  
 namespace etugl {
 
-class VerterArray {
+class VertexArray {
     std::optional<VertexBuffer> m_VBO = std::nullopt;
     std::optional<IndexBuffer>  m_EBO = std::nullopt;
 
@@ -20,28 +20,28 @@ class VerterArray {
 
 public:
 
-    VerterArray() = default;
+    VertexArray() = default;
 
-    VerterArray(const VertexBuffer& vbo, 
+    VertexArray(const VertexBuffer& vbo, 
                 const IndexBuffer& ebo,
                 const VertexLayout layout,
                 const size_t num_elements);
 
-    VerterArray(const std::vector<float>& vertices,
+    VertexArray(const std::vector<float>& vertices,
                 const std::vector<u32>& indices,
                 const VertexLayout layout);
 
-    VerterArray(const VerterArray& other) = delete;
+    VertexArray(const VertexArray& other) = delete;
 
-    VerterArray& operator=(const VerterArray& other) = delete;
+    VertexArray& operator=(const VertexArray& other) = delete;
 
-    VerterArray(VerterArray&& other) noexcept { swap(other); }
+    VertexArray(VertexArray&& other) noexcept { swap(other); }
 
-    VerterArray& operator=(VerterArray&& other) noexcept {swap(other);return *this;}
+    VertexArray& operator=(VertexArray&& other) noexcept {swap(other);return *this;}
 
-    ~VerterArray();
+    ~VertexArray();
 
-    void swap(VerterArray& other) { 
+    void swap(VertexArray& other) { 
         using std::swap;
         swap(m_VBO, other.m_VBO);
         swap(m_EBO, other.m_EBO);
@@ -49,15 +49,17 @@ public:
         swap(m_NumElements, other.m_NumElements);
     }
 
-    friend void swap(VerterArray& first, VerterArray& second) { first.swap(second); }
+    friend void swap(VertexArray& first, VertexArray& second) { first.swap(second); }
 
     inline void bind() const { glBindVertexArray(m_ID); }
 
     inline void unbind() const { glBindVertexArray(0); }
 
-    inline void draw() const {
+    inline void draw() const { draw(m_NumElements, 0); } 
+
+    inline void draw(size_t count, size_t offset) const {
         glBindVertexArray(m_ID);
-        glDrawElements(GL_TRIANGLES, m_NumElements, GL_UNSIGNED_INT, 0);
+        glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_INT, (void*)offset);
     } 
 };
 }

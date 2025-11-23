@@ -16,7 +16,7 @@ int main (int argc, char *argv[]) {
     etugl::Window window = etugl::WinPerspective();
     etugl::Camera& camera = window.camera();
 
-    etugl::Model mesh(path/"assets/scene.obj"); 
+    etugl::Model mesh(path/"assets/donats.obj"); 
     mesh.bind();
 
     glEnable(GL_DEPTH_TEST);
@@ -24,7 +24,7 @@ int main (int argc, char *argv[]) {
     // Create program with VertexShader + FragmentShader
     etugl::Program program(path/"vs.glsl", path/"fs.glsl");
 
-    // Renderer loop
+    // Renderer loop 
     while (!window.is_closed()) {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); 
         window.update();
@@ -37,7 +37,7 @@ int main (int argc, char *argv[]) {
         program.set_mat4f("u_Model", model);
         program.set_mat4f("u_View", view);
         program.set_mat4f("u_Projection", projection);
-        mesh.draw();
+        mesh.draw(program);
 
         window.swap();
         glfwPollEvents();

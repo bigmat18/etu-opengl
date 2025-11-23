@@ -1,10 +1,12 @@
 #pragma once
 
+#include "Program.hpp"
+#include "Texture.hpp"
 #include "VertexArray.hpp"
 #include "VertexLayout.hpp"
-#include "logging.hpp"
 #include <cstddef>
 #include <filesystem>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -17,17 +19,44 @@ namespace etugl {
 
 namespace fs = std::filesystem;
 
+struct Material {
+    std::string name;
+
+    vec3f ambient;
+    vec3f diffuse;
+    vec3f specular;
+    float shiniess;
+
+    std::optional<Texture2D> diffuse_tex = std::nullopt;
+
+    inline void bind(const Program& program) const {
+        program.set_vec3f("u_Ambient", ambient);
+        program.set_vec3f("u_Diffuse", diffuse);
+        program.set_vec3f("u_Specular", specular);
+        program.set_float("u_Shiniess", shiniess);
+
+        if (diffuse_tex) {
+            program.set_int("u_Texture", 0);
+            diffuse_tex->bind(0);
+        }
+    }
+};
+
+
 class Mesh {
     std::string m_Label;
-    VerterArray m_VAO;
+    VertexArray m_VAO;
+    size_t m_MaterialIdx;
 
 public: 
 
-    Mesh(const std::string label, 
+    Mesh(const std::string& label, 
          const std::vector<float>& vertices, 
-         const std::vector<u32>& indices) : m_Label(label) 
+         const std::vector<u32>& indices,
+         const size_t material_id = -1) : 
+        m_Label(label), m_MaterialIdx(material_id)
     {
-        m_VAO = VerterArray(
+        m_VAO = VertexArray(
             vertices, indices,
             VertexLayout()
              .add<LayoutType::Float3>(0)
@@ -42,128 +71,52 @@ public:
 
     Mesh(Mesh&& other) noexcept { swap(other); }
 
-    Mesh& operator=(Mesh&& other) noexcept { swap(other);return *this; }
+    Mesh& operator=(Mesh&& other) noexcept { swap(other); return *this; }
 
     void swap(Mesh& other) {
         using std::swap;
         swap(m_Label, other.m_Label);
         swap(m_VAO, other.m_VAO);
+        swap(m_MaterialIdx, other.m_MaterialIdx);
     }
 
     friend void swap(Mesh& first, Mesh& second) { first.swap(second); }
 
+    inline void bind() const noexcept { m_VAO.bind(); }
+
     inline void draw() const noexcept { m_VAO.draw(); }
 
-    inline void bind() const noexcept { m_VAO.bind(); }
+    [[nodiscard]] inline size_t material_idx() const { return m_MaterialIdx; }
 };
 
 class Model {
+    fs::path m_Path;
     std::vector<Mesh> m_Meshes;
+    std::vector<Material> m_Materials;
+    
 public:
 
-    Model(const fs::path path) {
-        const std::string path_str = path.string();
-        tinyobj::ObjReaderConfig config;
-        config.triangulate = true; 
+    Model(const fs::path& path);
 
-        tinyobj::ObjReader reader;
-
-        bool result = reader.ParseFromFile(path.string(), config);
-        if (!reader.Error().empty())
-            LOG_ERROR("Error in parse {}: {}", path_str, reader.Error());
-
-        if (!result) {
-            LOG_ERROR("Error in mesh loading {}", path_str);
-            return;
-        }
-
-        if (!reader.Warning().empty()) 
-            LOG_WARN("Warn in parse {}: {}", path_str, reader.Warning());
-
-        if (!reader.Valid()) {
-            LOG_ERROR("Mesh {} not valid", path_str);
-            return;
-        }
-
-        auto& attrib = reader.GetAttrib();
-        auto& shapes = reader.GetShapes();
-        auto& materials = reader.GetMaterials();
-
-        m_Meshes.reserve(shapes.size());
-
-        u32 vertex_offset = 0;
-        for (size_t s = 0; s < shapes.size(); s++) {
-
-            const size_t num_indices = shapes[s].mesh.indices.size();
-            const std::string label = shapes[s].name;
-
-            std::vector<float> vertices;
-            vertices.resize(num_indices * 8, 0.0f);
-
-            std::vector<u32> indices;
-            indices.reserve(num_indices);
-
-            size_t vi = 0;
-            size_t ii = 0;
-            std::unordered_map<u32, u32> duplicate_vertices;
-
-            for (const auto& idx : shapes[s].mesh.indices) {
-                if (idx.vertex_index >= 0) {
-                    auto it = duplicate_vertices.find(idx.vertex_index);
-                    if (it != duplicate_vertices.end()) {
-                        indices.push_back(it->second);
-                        continue;
-                    }
-                }
-
-                if (idx.vertex_index >= 0) {
-                    size_t vidx = 3 * static_cast<size_t>(idx.vertex_index);
-                    vertices[vi++] = attrib.vertices[vidx + 0];
-                    vertices[vi++] = attrib.vertices[vidx + 1];
-                    vertices[vi++] = attrib.vertices[vidx + 2];
-                } else vi+=3;
-
-                if (idx.normal_index >= 0) {
-                    size_t nidx = 3 * static_cast<size_t>(idx.normal_index);
-                    vertices[vi++] = attrib.normals[nidx + 0];
-                    vertices[vi++] = attrib.normals[nidx + 1];
-                    vertices[vi++] = attrib.normals[nidx + 2];
-                } else vi+=3;
-
-                if (idx.texcoord_index >= 0) {
-                    size_t tidx = 3 * static_cast<size_t>(idx.texcoord_index);
-                    vertices[vi++] = attrib.texcoords[tidx + 0];
-                    vertices[vi++] = attrib.texcoords[tidx + 1];
-                } else vi+=2;
-
-                indices.push_back(static_cast<u32>(ii));
-                duplicate_vertices[idx.vertex_index] = ii;
-                ii++;
-            }
-
-            vertices.resize(vi);
-            vertices.shrink_to_fit();
-            indices.shrink_to_fit();
-
-            u32 num_vertices = vertices.size() / 8;
-            vertex_offset += static_cast<u32>(num_indices);
-            m_Meshes.emplace_back(label, vertices, indices);
-            LOG_INFO("Mesh {} in {} loading: SUCCESS", vertex_offset, path_str);
-            LOG_INFO("Mesh {} Vertices loaded: {}", path_str, num_vertices);
-            LOG_INFO("Mesh {} Indices loaded: {}", path_str, num_indices);
-            vertex_offset++;
+    inline void draw(const Program& program) const {
+        for (const auto& mesh : m_Meshes) {
+            size_t mat_idx = mesh.material_idx();
+            if (mat_idx != -1)
+                m_Materials[mat_idx].bind(program);
+            mesh.draw();
         }
     }
 
-    inline void draw() const noexcept {
-        for (const auto& m : m_Meshes) 
-            m.draw();
+    inline void bind() const {
+        for (const auto& mesh : m_Meshes)
+            mesh.bind();
     }
 
-    inline void bind() const noexcept {
-        for (const auto& m : m_Meshes) 
-            m.bind();
-    }
+private:
+    void load_materials(const std::vector<tinyobj::material_t>& materials);
+
+    void load_shapes(const std::vector<tinyobj::shape_t>& shapes,
+                     const tinyobj::attrib_t& attrib);
 };
 
 }

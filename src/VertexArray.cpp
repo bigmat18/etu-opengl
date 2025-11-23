@@ -7,7 +7,7 @@
 
 namespace etugl {
 
-VerterArray::VerterArray(const VertexBuffer& vbo,
+VertexArray::VertexArray(const VertexBuffer& vbo,
                          const IndexBuffer& ebo,
                          const VertexLayout layout,
                          const size_t num_elements) : m_NumElements(num_elements)
@@ -23,7 +23,7 @@ VerterArray::VerterArray(const VertexBuffer& vbo,
     LOG_INFO("VertexArray {} create: SUCCESS", m_ID);
 }
 
-VerterArray::VerterArray(const std::vector<float>& vertices,
+VertexArray::VertexArray(const std::vector<float>& vertices,
                          const std::vector<u32>& indices,
                          const VertexLayout layout) :
     m_VBO(vertices), 
@@ -42,7 +42,7 @@ VerterArray::VerterArray(const std::vector<float>& vertices,
 }
 
 
-VerterArray::~VerterArray() {
+VertexArray::~VertexArray() {
     u32 id = m_ID;
     glDeleteVertexArrays(1, &m_ID);
     LOG_INFO("VertexArray {} destroy: SUCCESS", id);
