@@ -6,7 +6,8 @@
 
 namespace etugl {
 
-Model::Model(const fs::path& path) : m_Path(path)
+Model::Model(const fs::path& path, const bool flip_map) : 
+    m_Path(path), m_HasMapsFilped(flip_map)
 {
     const std::string path_str = m_Path.string();
     tinyobj::ObjReaderConfig config;
@@ -43,14 +44,17 @@ Model::Model(const fs::path& path) : m_Path(path)
 void Model::load_materials(const std::vector<tinyobj::material_t>& materials) {
     const fs::path ppath = m_Path.parent_path();
     const Texture2D::Params tex_params{
-        {GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR},
+        {GL_TEXTURE_WRAP_S, GL_REPEAT}, 
+        {GL_TEXTURE_WRAP_T, GL_REPEAT},
+        {GL_TEXTURE_MIN_FILTER, GL_LINEAR},
         {GL_TEXTURE_MAG_FILTER, GL_LINEAR}
     };
 
     auto has_tex = [&](const std::string& texname) {
         return texname.empty()
         ? std::optional<Texture2D>{std::nullopt}
-        : std::optional<Texture2D>{Texture2D(ppath / texname, tex_params)};
+        : std::optional<Texture2D>{Texture2D(ppath / texname, 
+                                             tex_params, m_HasMapsFilped)};
     };
 
     m_Materials.reserve(materials.size());

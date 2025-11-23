@@ -148,12 +148,13 @@ public:
 
 class Model {
     fs::path m_Path;
+    bool m_HasMapsFilped;
     std::vector<Mesh> m_Meshes;
     std::vector<Material> m_Materials;
     
 public:
 
-    Model(const fs::path& path);
+    Model(const fs::path& path, const bool flip_maps = true);
 
     inline void draw(const Program& program) const {
         for (const auto& mesh : m_Meshes) {
