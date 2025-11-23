@@ -2,6 +2,7 @@
 #include <Model.hpp>
 #include <filesystem>
 #include <optional>
+#include <vector>
 
 namespace etugl {
 
@@ -41,26 +42,46 @@ Model::Model(const fs::path& path) : m_Path(path)
 
 void Model::load_materials(const std::vector<tinyobj::material_t>& materials) {
     const fs::path ppath = m_Path.parent_path();
+    const Texture2D::Params tex_params{
+        {GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR},
+        {GL_TEXTURE_MAG_FILTER, GL_LINEAR}
+    };
 
-    auto has_tex = [](bool has, fs::path p) {
-        return has ? std::optional<Texture2D>(p) : std::nullopt;
+    auto has_tex = [&](const std::string& texname) {
+        return texname.empty()
+        ? std::optional<Texture2D>{std::nullopt}
+        : std::optional<Texture2D>{Texture2D(ppath / texname, tex_params)};
     };
 
     m_Materials.reserve(materials.size());
-    for (const auto& m : materials) {
-        const bool has_diff = !m.diffuse_texname.empty();
 
+    for (const auto& m : materials) {
         m_Materials.push_back({
             .name = m.name,
+
             .ambient = {m.ambient[0], m.ambient[1], m.ambient[2]},
             .diffuse = {m.diffuse[0], m.diffuse[1], m.diffuse[2]},
             .specular = {m.specular[0], m.specular[1], m.specular[2]},
-            .shiniess = m.shininess,
-            .diffuse_tex = has_tex(has_diff, ppath/m.diffuse_texname) 
+            .transmittance = {m.transmittance[0], m.transmittance[1], m.transmittance[2]},
+            .emission = {m.emission[0], m.emission[1], m.emission[2]},
+
+            .ior = (m.ior != 0.0f ? m.ior : 1.0f),
+            .shininess = m.shininess,
+            .dissolve = (m.dissolve != 0.0f ? m.dissolve : 1.0f),
+            .illum = m.illum,
+
+            .diffuse_tex   = has_tex(m.diffuse_texname), 
+            .normal_tex    = has_tex(!m.normal_texname.empty()
+                                     ? m.normal_texname
+                                     : m.bump_texname),    
+            .specular_tex  = has_tex(m.specular_texname),   // map_Ks
+            .ambient_tex   = has_tex(m.ambient_texname),    // map_Ka
+            .roughness_tex = has_tex(m.roughness_texname),  // PBR roughness
+            .emissive_tex  = has_tex(m.emissive_texname)    // map_Ke
         });
 
         LOG_INFO("Loaded material {}", m.name);
-    } 
+    }
 }
 
 

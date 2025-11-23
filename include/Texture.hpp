@@ -7,6 +7,7 @@
 #include <utils.hpp>
 
 #include <stb_image.h>
+#include <vector>
 
 namespace etugl {
 
@@ -15,50 +16,22 @@ namespace fs = std::filesystem;
 template <GLenum T>
 class Texture {
     u32 m_ID = 0;
-    u32 m_Width;
-    u32 m_Height;
+    u32 m_Width = 0;
+    u32 m_Height = 0;
+    bool m_IsFillped = false;
 
 public:
-    Texture(const fs::path& path) {
-        int channels, width, height;
-        stbi_set_flip_vertically_on_load(true);
-        stbi_uc* buffer = stbi_load(path.c_str(), &width, &height, &channels, 0);
-        massert(buffer, "Failed to load image " + path.string());
+    using Params = std::vector<std::pair<GLenum, GLenum>>;
 
-        if (!buffer)
-            return;
+    Texture(const fs::path& path, 
+            const Params params, 
+            const bool flip = true);
 
-        m_Height = height;
-        m_Width = width;
- 
-        GLenum format;
-        if (channels == 1)       format = GL_RED;
-        else if (channels == 3)  format = GL_RGB;
-        else if (channels == 4)  format = GL_RGBA;
-        
-        glGenTextures(1, &m_ID);
-        glBindTexture(T, m_ID);
-
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-
-        glTexImage2D(T, 0, format, m_Width, m_Height, 0, format, GL_UNSIGNED_BYTE, buffer);
-        glBindTexture(T, 0);
-        stbi_image_free(buffer);
-        LOG_INFO("Texture {} create: SUCCESS", m_ID);
-    }
-
-    ~Texture() {
-        u32 id = m_ID;
-        glDeleteTextures(1, &m_ID);
-        LOG_INFO("Texture {} destroy: SUCCESS", id);
-    }
+    ~Texture();
 
     Texture(Texture&& other) noexcept { swap(other); }
 
-    Texture& operator= (Texture&& other) noexcept {
+    Texture& operator=(Texture&& other) noexcept {
         swap(other);
         return *this;
     }
@@ -81,16 +54,28 @@ public:
         glBindTexture(T, m_ID);
     }
 
-    inline void unbind(const u32 slot) const { glBindTexture(T, 0); }
+    inline void unbind() const { glBindTexture(T, 0); }
 
-    inline void set_parameter(GLenum pname, GLfloat param) const {
+    [[nodiscard("Close the parameter adding")]] 
+    inline Texture<T>& begin() { 
+        glBindTexture(T, m_ID); 
+        return *this;
+    }
+
+    [[nodiscard("Close the parameter adding")]] 
+    inline Texture<T>& add(GLenum pname, GLfloat param) {
         glTexParameteri(T, pname, param);
         LOG_INFO("Texture {} set parameter: {} = {}", m_ID, pname, param);
+        return *this;
     }
+
+    inline Texture<T>& end() { unbind(); return *this; }
 
     [[nodiscard]] inline u32 width() const noexcept { return m_Width; }
     
     [[nodiscard]] inline u32 height() const noexcept { return m_Height; }
+
+    [[nodiscard]] inline bool is_fliped() const noexcept { return m_IsFillped; }
 };
 
 using Texture2D = Texture<GL_TEXTURE_2D>;

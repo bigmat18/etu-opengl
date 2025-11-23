@@ -11,6 +11,8 @@ set(SRC_DIR         ${CMAKE_CURRENT_SOURCE_DIR}/src)
 set(EXAMPLES_DIR    ${CMAKE_CURRENT_SOURCE_DIR}/examples)
 set(GLAD_SOURCE_DIR ${EXTERNAL_DIR}/glad)
 
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+
 find_package(OpenGL REQUIRED)
 find_package(glfw3 REQUIRED)
 

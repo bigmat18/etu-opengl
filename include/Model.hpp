@@ -20,33 +20,90 @@ namespace etugl {
 namespace fs = std::filesystem;
 
 struct Material {
-    std::string name;
+  static constexpr std::string_view AMBIENT_UNIFORM   = "u_Ambient";
+  static constexpr std::string_view DIFFUSE_UNIFORM   = "u_Diffuse";
+  static constexpr std::string_view SPECULAR_UNIFORM  = "u_Specular";
+  static constexpr std::string_view SHININESS_UNIFORM = "u_Shininess";
 
-    vec3f ambient;
-    vec3f diffuse;
-    vec3f specular;
-    float shiniess;
+  static constexpr std::string_view DIFF_TEX_UNIFORM = "u_TexDiff";
+  static constexpr std::string_view SPEC_TEX_UNIFORM = "u_TexSpec";
+  static constexpr std::string_view NORM_TEX_UNIFORM = "u_TexNorm";
+  static constexpr std::string_view AMBIENT_TEX_UNIFORM = "u_TexAmbient";
+  static constexpr std::string_view ROUGHNESS_TEX_UNIFORM = "u_TexRoughness";
+  static constexpr std::string_view EMISSIVE_TEX_UNIFORM = "u_TexEmissive";
 
-    std::optional<Texture2D> diffuse_tex = std::nullopt;
+  struct Slots {
+    static constexpr int Diffuse  = 0;
+    static constexpr int Specular = 1;
+    static constexpr int Normal   = 2;
+    static constexpr int Ambient  = 3;
+    static constexpr int Roughness = 4;
+    static constexpr int Emissive = 5;
+  };
 
-    inline void bind(const Program& program) const {
-        program.set_vec3f("u_Ambient", ambient);
-        program.set_vec3f("u_Diffuse", diffuse);
-        program.set_vec3f("u_Specular", specular);
-        program.set_float("u_Shiniess", shiniess);
+  std::string name = "unnamed_material";
 
-        if (diffuse_tex) {
-            program.set_int("u_Texture", 0);
-            diffuse_tex->bind(0);
-        }
+  vec3f ambient{0.0f};
+  vec3f diffuse{0.0f};
+  vec3f specular{0.0f};
+  vec3f transmittance{0.0f};
+  vec3f emission{0.0f}; 
+
+  float ior = 1.0f;       
+  float shininess = 0.0f; 
+  float dissolve = 1.0f; 
+  int   illum = 2; 
+
+  std::optional<Texture2D> diffuse_tex;
+  std::optional<Texture2D> normal_tex;
+  std::optional<Texture2D> specular_tex;
+  std::optional<Texture2D> ambient_tex;
+  std::optional<Texture2D> roughness_tex;
+  std::optional<Texture2D> emissive_tex;
+
+  inline void bind(const Program& program) const {
+    program.set_vec3f(std::string(AMBIENT_UNIFORM), ambient);
+    program.set_vec3f(std::string(DIFFUSE_UNIFORM), diffuse);
+    program.set_vec3f(std::string(SPECULAR_UNIFORM), specular);
+    program.set_float(std::string(SHININESS_UNIFORM), shininess);
+
+    if (diffuse_tex) {
+      program.set_int(std::string(DIFF_TEX_UNIFORM), Slots::Diffuse);
+      diffuse_tex->bind(Slots::Diffuse);
     }
+
+    if (specular_tex) {
+      program.set_int(std::string(SPEC_TEX_UNIFORM), Slots::Specular);
+      specular_tex->bind(Slots::Specular);
+    }
+
+    if (normal_tex) {
+      program.set_int(std::string(NORM_TEX_UNIFORM), Slots::Normal);
+      normal_tex->bind(Slots::Normal);
+    }
+
+    if (ambient_tex) {
+      program.set_int(std::string(AMBIENT_TEX_UNIFORM), Slots::Ambient);
+      ambient_tex->bind(Slots::Ambient);
+    }
+
+    if (roughness_tex) {
+      program.set_int(std::string(ROUGHNESS_TEX_UNIFORM), Slots::Roughness);
+      roughness_tex->bind(Slots::Roughness);
+    }
+
+    if (emissive_tex) {
+      program.set_int(std::string(EMISSIVE_TEX_UNIFORM), Slots::Emissive);
+      emissive_tex->bind(Slots::Emissive);
+    }
+  }
 };
 
 
 class Mesh {
-    std::string m_Label;
+    std::string m_Label = "unnamed_mesh";
+    size_t m_MaterialIdx = -1;
     VertexArray m_VAO;
-    size_t m_MaterialIdx;
 
 public: 
 
@@ -101,15 +158,13 @@ public:
     inline void draw(const Program& program) const {
         for (const auto& mesh : m_Meshes) {
             size_t mat_idx = mesh.material_idx();
-            if (mat_idx != -1)
-                m_Materials[mat_idx].bind(program);
+            if (mat_idx != -1) m_Materials[mat_idx].bind(program);
             mesh.draw();
         }
     }
 
     inline void bind() const {
-        for (const auto& mesh : m_Meshes)
-            mesh.bind();
+        for (const auto& mesh : m_Meshes) mesh.bind();
     }
 
 private:

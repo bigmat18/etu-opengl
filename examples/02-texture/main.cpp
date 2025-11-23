@@ -7,7 +7,6 @@
 
 #include <Window.hpp>
 #include <filesystem>
-#include <print>
 #include <vector>
 
 static const std::vector<float> vertices = {
@@ -42,7 +41,11 @@ int main (int argc, char *argv[]) {
     etugl::Program program(path/"vs.glsl", path/"fs.glsl");
 
     // Load and create texture
-    etugl::Texture2D texture(path/"assets/awesomeface.png");
+    etugl::Texture2D texture(
+        path/"assets/awesomeface.png",
+       {{GL_TEXTURE_MIN_FILTER, GL_LINEAR},
+        {GL_TEXTURE_MAG_FILTER, GL_LINEAR}}
+    );
    
     // Tell openglfor each sampler to which texture unit it belogs to
     program.bind();
