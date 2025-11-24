@@ -38,18 +38,20 @@ public:
     [[nodiscard]] inline mat4f view() const {
         return glm::lookAt(m_Position, m_Position + m_Front, m_Up);
     } 
+
+    [[nodiscard]] inline vec3f position() const { return m_Position; }
  
     void update_position(float delta_time, int key);
  
     void update_front(float new_x, float new_y);  
 
-    float& movemet_speed() { return m_MovementSpeed; }
+    [[nodiscard]] float& movemet_speed() { return m_MovementSpeed; }
 
-    float& mouse_sensitivity() { return m_MouseSensitivity; }
+    [[nodiscard]] float& mouse_sensitivity() { return m_MouseSensitivity; }
 
-    int& width() { return m_Width; }
+    [[nodiscard]] int& width() { return m_Width; }
 
-    int& height() { return m_Height; }
+    [[nodiscard]] int& height() { return m_Height; }
 };
 
 class Ortographic : public Camera {

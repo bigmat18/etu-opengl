@@ -17,9 +17,11 @@ namespace fs = std::filesystem;
 template <GLenum T>
 class Shader {
     u32 m_ID = 0;
+    fs::path m_Path;
 
 public:
-    Shader(const fs::path& path) {
+    Shader(const fs::path& path) : m_Path(path)
+    {
         m_ID = glCreateShader(T);
 
         const std::string shader_code = read_file(path);
@@ -29,7 +31,8 @@ public:
         glShaderSource(m_ID, 1, &final_code, NULL);
         glCompileShader(m_ID);
 
-        if(is_valid()) LOG_INFO("Shader {} create: SUCCESS", m_ID);
+        if(is_valid()) 
+            LOG_INFO("Shader {} create: SUCCESS", m_ID);
     }
 
 
@@ -112,7 +115,8 @@ private:
 
             result.append(code, prev, start - prev);
 
-            const std::string include_code = read_file(header);
+            fs::path header_path = m_Path.parent_path()/header;
+            const std::string include_code = read_file(header_path);
             const std::string post_process_code = pre_process(include_code);
 
             result.append(post_process_code);

@@ -20,83 +20,95 @@ namespace etugl {
 namespace fs = std::filesystem;
 
 struct Material {
-  static constexpr std::string_view AMBIENT_UNIFORM   = "u_Ambient";
-  static constexpr std::string_view DIFFUSE_UNIFORM   = "u_Diffuse";
-  static constexpr std::string_view SPECULAR_UNIFORM  = "u_Specular";
-  static constexpr std::string_view SHININESS_UNIFORM = "u_Shininess";
+    static constexpr std::string_view AMBIENT       = "u_Ambient";
+    static constexpr std::string_view DIFFUSE       = "u_Diffuse";
+    static constexpr std::string_view SPECULAR      = "u_Specular";
+    static constexpr std::string_view TRANSMITTANCE = "u_Transmittance";
+    static constexpr std::string_view EMISSION      = "u_Emission";
 
-  static constexpr std::string_view DIFF_TEX_UNIFORM = "u_TexDiff";
-  static constexpr std::string_view SPEC_TEX_UNIFORM = "u_TexSpec";
-  static constexpr std::string_view NORM_TEX_UNIFORM = "u_TexNorm";
-  static constexpr std::string_view AMBIENT_TEX_UNIFORM = "u_TexAmbient";
-  static constexpr std::string_view ROUGHNESS_TEX_UNIFORM = "u_TexRoughness";
-  static constexpr std::string_view EMISSIVE_TEX_UNIFORM = "u_TexEmissive";
+    static constexpr std::string_view IOR           = "u_Ior";
+    static constexpr std::string_view SHININESS     = "u_Shininess";
+    static constexpr std::string_view DISSOLVE      = "u_Dissolve";
+    static constexpr std::string_view ILLUM         = "u_Illum";
 
-  struct Slots {
-    static constexpr int Diffuse  = 0;
-    static constexpr int Specular = 1;
-    static constexpr int Normal   = 2;
-    static constexpr int Ambient  = 3;
-    static constexpr int Roughness = 4;
-    static constexpr int Emissive = 5;
-  };
+    static constexpr std::string_view DIFF_TEX      = "u_TexDiff";
+    static constexpr std::string_view SPEC_TEX      = "u_TexSpec";
+    static constexpr std::string_view NORM_TEX      = "u_TexNorm";
+    static constexpr std::string_view AMBIENT_TEX   = "u_TexAmbient";
+    static constexpr std::string_view ROUGHNESS_TEX = "u_TexRoughness";
+    static constexpr std::string_view EMISSIVE_TEX  = "u_TexEmissive";
 
-  std::string name = "unnamed_material";
+    struct Slots {
+      static constexpr int Diffuse      = 0;
+      static constexpr int Specular     = 1;
+      static constexpr int Normal       = 2;
+      static constexpr int Ambient      = 3;
+      static constexpr int Roughness    = 4;
+      static constexpr int Emissive     = 5;
+    };
 
-  vec3f ambient{0.0f};
-  vec3f diffuse{0.0f};
-  vec3f specular{0.0f};
-  vec3f transmittance{0.0f};
-  vec3f emission{0.0f}; 
+    std::string name = "unnamed_material";
 
-  float ior = 1.0f;       
-  float shininess = 0.0f; 
-  float dissolve = 1.0f; 
-  int   illum = 2; 
+    vec3f ambient{0.0f};
+    vec3f diffuse{0.0f};
+    vec3f specular{0.0f};
+    vec3f transmittance{0.0f};
+    vec3f emission{0.0f}; 
 
-  std::optional<Texture2D> diffuse_tex;
-  std::optional<Texture2D> normal_tex;
-  std::optional<Texture2D> specular_tex;
-  std::optional<Texture2D> ambient_tex;
-  std::optional<Texture2D> roughness_tex;
-  std::optional<Texture2D> emissive_tex;
+    float ior = 1.0f;       
+    float shininess = 0.0f; 
+    float dissolve = 1.0f; 
+    int   illum = 2; 
 
-  inline void bind(const Program& program) const {
-    program.set_vec3f(std::string(AMBIENT_UNIFORM), ambient);
-    program.set_vec3f(std::string(DIFFUSE_UNIFORM), diffuse);
-    program.set_vec3f(std::string(SPECULAR_UNIFORM), specular);
-    program.set_float(std::string(SHININESS_UNIFORM), shininess);
+    std::optional<Texture2D> diffuse_tex;
+    std::optional<Texture2D> normal_tex;
+    std::optional<Texture2D> specular_tex;
+    std::optional<Texture2D> ambient_tex;
+    std::optional<Texture2D> roughness_tex;
+    std::optional<Texture2D> emissive_tex;
 
-    if (diffuse_tex) {
-      program.set_int(std::string(DIFF_TEX_UNIFORM), Slots::Diffuse);
-      diffuse_tex->bind(Slots::Diffuse);
+    inline void bind(const Program& program) const {
+        program.set_vec3f(std::string(AMBIENT), ambient);
+        program.set_vec3f(std::string(DIFFUSE), diffuse);
+        program.set_vec3f(std::string(SPECULAR), specular);
+        program.set_vec3f(std::string(TRANSMITTANCE), transmittance);
+        program.set_vec3f(std::string(EMISSION), emission);
+
+        program.set_float(std::string(IOR), ior);
+        program.set_float(std::string(SHININESS), shininess);
+        program.set_float(std::string(DISSOLVE), dissolve);
+        program.set_float(std::string(ILLUM), illum);
+
+        if (diffuse_tex) {
+          program.set_int(std::string(DIFF_TEX), Slots::Diffuse);
+          diffuse_tex->bind(Slots::Diffuse);
+        }
+
+        if (specular_tex) {
+          program.set_int(std::string(SPEC_TEX), Slots::Specular);
+          specular_tex->bind(Slots::Specular);
+        }
+
+        if (normal_tex) {
+          program.set_int(std::string(NORM_TEX), Slots::Normal);
+          normal_tex->bind(Slots::Normal);
+        }
+
+        if (ambient_tex) {
+          program.set_int(std::string(AMBIENT_TEX), Slots::Ambient);
+          ambient_tex->bind(Slots::Ambient);
+        }
+
+        if (roughness_tex) {
+          program.set_int(std::string(ROUGHNESS_TEX), Slots::Roughness);
+          roughness_tex->bind(Slots::Roughness);
+        }
+
+        if (emissive_tex) {
+          program.set_int(std::string(EMISSIVE_TEX), Slots::Emissive);
+          emissive_tex->bind(Slots::Emissive);
+        }
     }
-
-    if (specular_tex) {
-      program.set_int(std::string(SPEC_TEX_UNIFORM), Slots::Specular);
-      specular_tex->bind(Slots::Specular);
-    }
-
-    if (normal_tex) {
-      program.set_int(std::string(NORM_TEX_UNIFORM), Slots::Normal);
-      normal_tex->bind(Slots::Normal);
-    }
-
-    if (ambient_tex) {
-      program.set_int(std::string(AMBIENT_TEX_UNIFORM), Slots::Ambient);
-      ambient_tex->bind(Slots::Ambient);
-    }
-
-    if (roughness_tex) {
-      program.set_int(std::string(ROUGHNESS_TEX_UNIFORM), Slots::Roughness);
-      roughness_tex->bind(Slots::Roughness);
-    }
-
-    if (emissive_tex) {
-      program.set_int(std::string(EMISSIVE_TEX_UNIFORM), Slots::Emissive);
-      emissive_tex->bind(Slots::Emissive);
-    }
-  }
 };
 
 

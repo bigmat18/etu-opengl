@@ -17,9 +17,10 @@ int main (int argc, char *argv[]) {
     etugl::Camera& camera = window.camera();
 
     etugl::Model mesh(path/"assets/backpack/backpack.obj", false); 
-    mesh.bind();
+    mesh.bind(); 
 
     glEnable(GL_DEPTH_TEST); 
+    glEnable(GL_CULL_FACE);  
 
     // Create program with VertexShader + FragmentShader
     etugl::Program program(path/"vs.glsl", path/"fs.glsl");
@@ -30,11 +31,14 @@ int main (int argc, char *argv[]) {
         window.update();
 
         program.bind();    
+
         etugl::mat4f model(1.0f);
+        etugl::vec3f position = camera.position();
         etugl::mat4f view = camera.view();
         etugl::mat4f projection = camera.projection();
            
         program.set_mat4f("u_Model", model);
+        program.set_vec3f("u_Position", position);
         program.set_mat4f("u_View", view);
         program.set_mat4f("u_Projection", projection);
         mesh.draw(program);

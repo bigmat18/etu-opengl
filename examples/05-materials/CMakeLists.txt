@@ -12,3 +12,4 @@ target_include_directories(${EXAMPLE_NAME} PUBLIC ${SUBDIR_PATH})
 
 include(utils)
 copy_resources(${EXAMPLE_NAME} ${CMAKE_CURRENT_SOURCE_DIR})
+link_shaders(${EXAMPLE_NAME})

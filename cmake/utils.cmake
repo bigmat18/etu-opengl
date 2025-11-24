@@ -20,3 +20,16 @@ function(copy_resources target_name resource_root_dir)
         VERBATIM
     )
 endfunction()
+
+function(link_shaders target_name)
+    set(target_output_dir $<TARGET_FILE_DIR:${target_name}>)
+
+    add_custom_command(TARGET ${target_name} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+                ${CMAKE_SOURCE_DIR}/shaders
+                ${target_output_dir}/etugl
+
+        COMMENT "Linking default shader in ${target_name}"
+        VERBATIM
+    )
+endfunction()
