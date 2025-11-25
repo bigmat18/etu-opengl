@@ -16,7 +16,7 @@ int main (int argc, char *argv[]) {
     etugl::Window window = etugl::WinPerspective();
     etugl::Camera& camera = window.camera();
 
-    etugl::Model mesh(path/"assets/backpack/backpack.obj", false); 
+    etugl::Model mesh(path/"assets/cyborg/cyborg.obj"); 
 
     mesh.bind(); 
 
