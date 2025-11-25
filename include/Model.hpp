@@ -4,6 +4,7 @@
 #include "Texture.hpp"
 #include "VertexArray.hpp"
 #include "VertexLayout.hpp"
+#include "debug.hpp"
 #include <cstddef>
 #include <filesystem>
 #include <optional>
@@ -128,9 +129,10 @@ public:
         m_VAO = VertexArray(
             vertices, indices,
             VertexLayout()
-             .add<LayoutType::Float3>(0)
-             .add<LayoutType::Float3>(1)
-             .add<LayoutType::Float2>(2)
+             .add<LayoutType::Float3>(0) // Position
+             .add<LayoutType::Float3>(1) // Normal
+             .add<LayoutType::Float4>(2) // Tangent
+             .add<LayoutType::Float2>(3) // UV
         );
     }
 
@@ -185,6 +187,50 @@ private:
 
     void load_shapes(const std::vector<tinyobj::shape_t>& shapes,
                      const tinyobj::attrib_t& attrib);
+
+    inline vec3f fetch_position(const tinyobj::attrib_t& attrib, int idx) {
+        if (idx < 0) return vec3f(0);
+        int o = 3 * idx;
+        return vec3f(attrib.vertices[o + 0],
+                     attrib.vertices[o + 1],
+                     attrib.vertices[o + 2]);
+    }
+
+    inline vec3f fetch_normal(const tinyobj::attrib_t& attrib, int idx) { 
+        if (idx < 0) return vec3f(0);
+        int o = 3 * idx;
+        return vec3f(attrib.normals[o + 0],
+                     attrib.normals[o + 1],
+                     attrib.normals[o + 2]);
+    }
+
+    inline vec2f fetch_uv(const tinyobj::attrib_t& attrib, int idx) {
+        if (idx < 0) return vec2f(0);
+        int o = 2 * idx;
+        return vec2f(attrib.texcoords[o + 0],
+                     attrib.texcoords[o + 1]);
+    }
+
+    inline void compute_TB(const vec3f& P0, const vec3f& P1, const vec3f& P2,
+                           const vec2f& UV0, const vec2f& UV1, const vec2f& UV2,
+                           vec3f& T, vec3f& B) 
+    {
+        vec3f E1 = P1 - P0; 
+        vec3f E2 = P2 - P0;
+        vec2f dUV1 = UV1 - UV0;
+        vec2f dUV2 = UV2 - UV0;
+
+        float det = dUV1.x * dUV2.y - dUV1.y * dUV2.x;
+        if (std::fabs(det) < 1e-12f) {
+            T = vec3f(0.0f);
+            B = vec3f(0.0f);
+            return;
+        }
+
+        float r = 1.0f / det;
+        T = (E1 * dUV2.y - E2 * dUV1.y) * r;
+        B = (E2 * dUV1.x - E1 * dUV2.x) * r;
+    }
 };
 
 }

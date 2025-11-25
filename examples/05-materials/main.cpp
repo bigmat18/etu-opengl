@@ -17,6 +17,7 @@ int main (int argc, char *argv[]) {
     etugl::Camera& camera = window.camera();
 
     etugl::Model mesh(path/"assets/backpack/backpack.obj", false); 
+
     mesh.bind(); 
 
     glEnable(GL_DEPTH_TEST); 
@@ -38,7 +39,7 @@ int main (int argc, char *argv[]) {
         etugl::mat4f projection = camera.projection();
            
         program.set_mat4f("u_Model", model);
-        program.set_vec3f("u_Position", position);
+        program.set_vec3f("u_ViewPos", position);
         program.set_mat4f("u_View", view);
         program.set_mat4f("u_Projection", projection);
         mesh.draw(program);
