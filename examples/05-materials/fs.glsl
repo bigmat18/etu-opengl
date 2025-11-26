@@ -1,4 +1,8 @@
 #version 330 core  
+
+#define LIGHT_POS   vec3(1.2f, 1.0f, 2.0f)
+#define LIGHT_COLOR vec3(1.0f, 1.0f, 1.0f)
+
 #include <etugl/uniforms.glsl>
 #include <etugl/phong_model.glsl>
 

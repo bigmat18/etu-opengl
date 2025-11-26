@@ -19,7 +19,4 @@ uniform sampler2D   u_TexAmbient;
 uniform sampler2D   u_TexRoughness;
 uniform sampler2D   u_TexEmissive;
 
-#define LIGHT_POS   vec3(1.2f, 1.0f, 2.0f)
-#define LIGHT_COLOR vec3(1.0f, 1.0f, 1.0f)
-
 #endif // MATERIALS_UNIFORMS
