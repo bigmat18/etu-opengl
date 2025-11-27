@@ -75,16 +75,16 @@ public:
         glUniform4ui(glGetUniformLocation(m_ID, name.c_str()), vec.x, vec.y, vec.z, vec.w);
     }
 
-    inline void set_mat2f(const std::string& name, const mat2f& mat) const {
-        glUniformMatrix2fv(glGetUniformLocation(m_ID, name.c_str()), 1, GL_FALSE, glm::value_ptr(mat));
+    inline void set_mat2f(const std::string& name, const mat2f& mat, bool traspose = false) const {
+        glUniformMatrix2fv(glGetUniformLocation(m_ID, name.c_str()), 1, traspose, glm::value_ptr(mat));
     }
 
-    inline void set_mat3f(const std::string& name, const mat3f& mat) const {
-        glUniformMatrix3fv(glGetUniformLocation(m_ID, name.c_str()), 1, GL_FALSE, glm::value_ptr(mat));
+    inline void set_mat3f(const std::string& name, const mat3f& mat, bool traspose = false) const {
+        glUniformMatrix3fv(glGetUniformLocation(m_ID, name.c_str()), 1, traspose, glm::value_ptr(mat));
     }
 
-    inline void set_mat4f(const std::string& name, const mat4f& mat) const {
-        glUniformMatrix4fv(glGetUniformLocation(m_ID, name.c_str()), 1, GL_FALSE, glm::value_ptr(mat));
+    inline void set_mat4f(const std::string& name, const mat4f& mat, bool traspose = false) const {
+        glUniformMatrix4fv(glGetUniformLocation(m_ID, name.c_str()), 1, traspose, glm::value_ptr(mat));
     }
 };
 

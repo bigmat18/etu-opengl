@@ -9,7 +9,7 @@ namespace etugl {
 
 class Camera {
 
-    vec3f m_Position = vec3f(0.0f, 0.0f, 0.0f); 
+    vec3f m_Position = vec3f(0.0f, 0.0f, 0.0f);
     vec3f m_Front = vec3f(0.0f, 0.0f, -1.0f);
     vec3f m_Up = vec3f(0.0f, 1.0f, 0.0f);
 
