@@ -9,14 +9,14 @@ namespace etugl {
 
 class Camera {
 
-    vec3f m_Position = vec3f(0.0f, 0.0f, 0.0f);
-    vec3f m_Front = vec3f(0.0f, 0.0f, -0.0f);
+    vec3f m_Position = vec3f(0.0f, 0.0f, 0.0f); 
+    vec3f m_Front = vec3f(0.0f, 0.0f, -1.0f);
     vec3f m_Up = vec3f(0.0f, 1.0f, 0.0f);
 
-    float m_Yaw = -90.0f; 
+    float m_Yaw = -90.0f;
     float m_Pitch = 0.0f;  
     
-    float m_MovementSpeed = 2.5f;   
+    float m_MovementSpeed = 1.5f;   
     float m_MouseSensitivity = 0.1f;
 
 protected:
