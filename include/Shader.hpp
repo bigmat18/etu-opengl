@@ -54,7 +54,7 @@ public:
 
         GLint compiled = 0;
         glGetShaderiv(m_ID, GL_COMPILE_STATUS, &compiled);
-        LOG_INFO("Compile status of shader " + std::to_string(m_ID) + ": " + 
+        LOG_INFO("Compile status of shader {}: {}", m_ID, 
                  (compiled ? "SUCCESS" : "FAILED"));
 
         GLint logLength = 0;

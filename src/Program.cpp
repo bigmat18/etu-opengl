@@ -41,12 +41,12 @@ bool Program::is_valid() const {
     glValidateProgram(m_ID);
     GLint validate_status = 0;
     glGetProgramiv(m_ID, GL_VALIDATE_STATUS, &validate_status);
-    LOG_INFO("Validation status of program " + std::to_string(m_ID) + ": " + 
+    LOG_INFO("Validation status of program {}: {}", m_ID, 
              (validate_status ? "SUCCESS" : "FAILED"));
 
     GLint link_status;
     glGetProgramiv(m_ID, GL_LINK_STATUS, &link_status);
-    LOG_INFO("Link status of program " + std::to_string(m_ID) + ": " + 
+    LOG_INFO("Link status of program {}: {}", m_ID, 
              (link_status ? "SUCCESS" : "FAILED"));
 
     if (link_status != GL_TRUE || validate_status != GL_TRUE) {
