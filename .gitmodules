@@ -1,9 +1,0 @@
-[submodule "external/cpp-utils-lib"]
-	path = external/cpp-utils-lib
-	url = https://github.com/bigmat18/cpp-utils-lib.git
-[submodule "external/glm"]
-	path = external/glm
-	url = https://github.com/g-truc/glm.git
-[submodule "external/tinyobjloader"]
-	path = external/tinyobjloader
-	url = https://github.com/tinyobjloader/tinyobjloader.git

@@ -4,7 +4,8 @@
 #include <cstddef>
 #include <glad/glad.h>
 #include <Types.hpp>
-#include <utils.hpp>
+#include <core/logging.hpp>
+#include <core/common.hpp>
 
 namespace etugl {
 

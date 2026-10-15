@@ -5,7 +5,12 @@
 #include <GLFW/glfw3.h>
 #include <string>
 
-#include <utils.hpp>
+#include <core/logging.hpp>
+#ifdef assert
+#undef assert
+#endif
+#include <core/massert.hpp>
+#include <core/common.hpp>
 #include <Types.hpp>
 #include <type_traits>
 

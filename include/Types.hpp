@@ -1,7 +1,10 @@
 #pragma once
 
 #include <cstdint>
+#include <filesystem>
 #include <glm/glm.hpp>
+
+namespace fs = std::filesystem;
 
 namespace etugl {
     using u8    = uint8_t; 

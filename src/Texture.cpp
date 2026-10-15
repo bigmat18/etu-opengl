@@ -1,5 +1,11 @@
 #include <Texture.hpp>
 #include <filesystem>
+#include <core/logging.hpp>
+#ifdef assert
+#undef assert
+#endif
+#include <core/massert.hpp>
+#include <core/common.hpp>
 
 namespace etugl {
    
@@ -10,7 +16,8 @@ Texture<T>::Texture(const fs::path& path, const Params params, const bool flip) 
     int channels, width, height;
     stbi_set_flip_vertically_on_load(flip);
     stbi_uc* buffer = stbi_load(path.c_str(), &width, &height, &channels, 0);
-    massert(buffer, "Failed to load image " + path.string());
+    std::string fail_msg = "Failed to load image " + path.string();
+    massert(buffer, fail_msg);
 
     if (!buffer)
         return;
@@ -33,12 +40,12 @@ Texture<T>::Texture(const fs::path& path, const Params params, const bool flip) 
     glBindTexture(T, 0);
     stbi_image_free(buffer);
     stbi_set_flip_vertically_on_load(false);
-    LOG_INFO("Texture {} create: SUCCESS", m_ID);
+    core::logging::info("Texture create: SUCCESS", VAR(m_ID));
 }
 
 template <GLenum T>
 Texture<T>::~Texture() {
-    LOG_INFO("Texture {} destroy: SUCCESS", m_ID);
+    core::logging::info("Texture destroy: SUCCESS", VAR(m_ID));
     glDeleteTextures(1, &m_ID);
 }
 

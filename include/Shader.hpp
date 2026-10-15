@@ -8,7 +8,8 @@
 
 #include <glad/glad.h>
 #include <Types.hpp>
-#include <utils.hpp>
+#include <core/logging.hpp>
+#include <core/common.hpp>
 
 namespace etugl {
 
@@ -32,14 +33,14 @@ public:
         glCompileShader(m_ID);
 
         if(is_valid()) 
-            LOG_INFO("Shader {} create: SUCCESS", m_ID);
+            core::logging::info("Shader create: SUCCESS", VAR(m_ID));
     }
 
 
     ~Shader() {
         u32 id = m_ID;
         glDeleteShader(m_ID);
-        LOG_INFO("Shader {} destroy: SUCCESS", id);
+        core::logging::info("Shader destroy: SUCCESS", VAR(id));
     }
 
     Shader(const Shader& other) = delete;
@@ -48,14 +49,14 @@ public:
 
     bool is_valid() const {
         if (!m_ID) {
-            LOG_WARN("Shader {} invalid", m_ID);
+            core::logging::warn("Shader invalid", VAR(m_ID));
             return false;
         }
 
         GLint compiled = 0;
         glGetShaderiv(m_ID, GL_COMPILE_STATUS, &compiled);
-        LOG_INFO("Compile status of shader {}: {}", m_ID, 
-                 (compiled ? "SUCCESS" : "FAILED"));
+        const char* status_str = (compiled ? "SUCCESS" : "FAILED");
+        core::logging::info("Compile status of shader", VAR(m_ID), VAR(status_str));
 
         GLint logLength = 0;
         glGetShaderiv(m_ID, GL_INFO_LOG_LENGTH, &logLength);
@@ -69,9 +70,9 @@ public:
                 log.resize(static_cast<size_t>(written));
 
             if (compiled == GL_TRUE)
-                LOG_WARN("Shader {} compiled but has warnings: {}", m_ID, log);
+                core::logging::warn("Shader compiled but has warnings", VAR(m_ID), VAR(log));
             else
-                LOG_ERROR("Shader {} failed to compile: {}", m_ID, log);
+                core::logging::error("Shader failed to compile", VAR(m_ID), VAR(log));
         }
 
         return compiled == GL_TRUE;
@@ -84,7 +85,7 @@ private:
         std::ifstream file(path, std::ios::binary);
         if(!file) {
             std::string str = path.string();
-            LOG_ERROR("Shader {}: cannot open file {}", m_ID, str);
+            core::logging::error("Shader: cannot open file", VAR(m_ID), VAR(str));
             return "";
         }
         std::string out;

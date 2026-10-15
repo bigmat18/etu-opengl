@@ -4,6 +4,8 @@ _build/
 out/
 dist/
 .cache/
+external/
+result
 
 # Compiled Object files
 *.slo

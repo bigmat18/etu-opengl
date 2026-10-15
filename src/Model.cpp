@@ -1,6 +1,6 @@
 #include "Texture.hpp"
-#include "debug.hpp"
-#include "logging.hpp"
+#include <core/logging.hpp>
+#include <core/common.hpp>
 #include <Model.hpp>
 #include <cstddef>
 #include <filesystem>
@@ -16,31 +16,27 @@ Model::Model(const fs::path& path, const bool flip_map) :
     m_Path(path), m_HasMapsFilped(flip_map)
 {
     const std::string path_str = m_Path.string();
-    tinyobj::ObjReaderConfig config;
-    config.triangulate = true; 
+    tinyobj::attrib_t attrib;
+    std::vector<tinyobj::shape_t> shapes;
+    std::vector<tinyobj::material_t> materials;
+    std::string warn;
+    std::string err;
 
-    tinyobj::ObjReader reader;
+    std::string base_dir = path.parent_path().string();
+    bool result = tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, path_str.c_str(), base_dir.empty() ? nullptr : base_dir.c_str(), true);
 
-    bool result = reader.ParseFromFile(path.string(), config);
-    if (!reader.Error().empty())
-        LOG_ERROR("Error in parse {}: {}", path_str, reader.Error());
+    if (!err.empty()) {
+        core::logging::error("Error in parse", VAR(path_str), VAR(err));
+    }
 
     if (!result) {
-        LOG_ERROR("Error in mesh loading {}", path_str);
+        core::logging::error("Error in mesh loading", VAR(path_str));
         return;
     }
 
-    if (!reader.Warning().empty()) 
-        LOG_WARN("Warn in parse {}: {}", path_str, reader.Warning());
-
-    if (!reader.Valid()) {
-        LOG_ERROR("Mesh {} not valid", path_str);
-        return;
+    if (!warn.empty()) {
+        core::logging::warn("Warn in parse", VAR(path_str), VAR(warn));
     }
-
-    auto& attrib = reader.GetAttrib();
-    auto& shapes = reader.GetShapes();
-    auto& materials = reader.GetMaterials();
 
     load_materials(materials);
     load_shapes(shapes, attrib);
@@ -90,7 +86,7 @@ void Model::load_materials(const std::vector<tinyobj::material_t>& materials) {
             .emissive_tex  = has_tex(m.emissive_texname)    // map_Ke
         });
 
-        LOG_INFO("Loaded material {}", m.name);
+        core::logging::info("Loaded material", VAR(m.name));
     }
 }
 
@@ -205,10 +201,10 @@ void Model::load_shapes(const std::vector<tinyobj::shape_t>& shapes,
         u32 num_vertices = vertices.size() / 12;
         u32 num_faces = num_indices / 3;
         m_Meshes.emplace_back(label, vertices, indices, material_idx);
-        LOG_INFO("Mesh {} Vertices loaded: {}", filename, num_vertices);
-        LOG_INFO("Mesh {} Faces loaded: {}", filename, num_faces);
-        LOG_INFO("Mesh {} material idx: {}", filename, material_idx);
-        LOG_INFO("Mesh {} in {} loading: SUCCESS", label, filename);
+        core::logging::info("Mesh vertices loaded", VAR(filename), VAR(num_vertices));
+        core::logging::info("Mesh faces loaded", VAR(filename), VAR(num_faces));
+        core::logging::info("Mesh material idx", VAR(filename), VAR(material_idx));
+        core::logging::info("Mesh loading: SUCCESS", VAR(label), VAR(filename));
     }
 }
 

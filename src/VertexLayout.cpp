@@ -4,7 +4,7 @@ namespace etugl {
 
 void VertexLayout::bind() const {
     if (m_Elements.empty()) {
-        LOG_WARN("VertexLayout bind not permitted for empty layout");
+        core::logging::warn("VertexLayout bind not permitted for empty layout");
         return;
     }
 

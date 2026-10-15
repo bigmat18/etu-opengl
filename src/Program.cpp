@@ -1,5 +1,6 @@
 #include "Shader.hpp"
-#include "logging.hpp"
+#include <core/logging.hpp>
+#include <core/common.hpp>
 #include <Program.hpp>
 #include <glad/glad.h>
 #include <string>
@@ -12,7 +13,7 @@ Program::Program(const VertexShader& vert_shader, const FragmentShader& frag_sha
     glAttachShader(m_ID, frag_shader.get_ID());
     glLinkProgram(m_ID);
 
-    if (is_valid()) LOG_INFO("Program {} create: SUCCESS", m_ID);
+    if (is_valid()) core::logging::info("Program create: SUCCESS", VAR(m_ID));
 }
 
 Program::Program(const fs::path& vs_path, const fs::path& fs_path) {    
@@ -24,30 +25,30 @@ Program::Program(const fs::path& vs_path, const fs::path& fs_path) {
     glAttachShader(m_ID, frag.get_ID());
     glLinkProgram(m_ID);
 
-    if (is_valid()) LOG_INFO("Program {} create: SUCCESS", m_ID);
+    if (is_valid()) core::logging::info("Program create: SUCCESS", VAR(m_ID));
 }
 
 Program::~Program() {
-    LOG_INFO("Program {} deleted", m_ID);
+    core::logging::info("Program deleted", VAR(m_ID));
     glDeleteProgram(m_ID);
 }
     
 bool Program::is_valid() const {
     if (!m_ID) {
-        LOG_WARN("Program ID {} invalid", m_ID);
+        core::logging::warn("Program ID invalid", VAR(m_ID));
         return false;
     }
 
     glValidateProgram(m_ID);
     GLint validate_status = 0;
     glGetProgramiv(m_ID, GL_VALIDATE_STATUS, &validate_status);
-    LOG_INFO("Validation status of program {}: {}", m_ID, 
-             (validate_status ? "SUCCESS" : "FAILED"));
+    const char* val_status = (validate_status ? "SUCCESS" : "FAILED");
+    core::logging::info("Validation status of program", VAR(m_ID), VAR(val_status));
 
     GLint link_status;
     glGetProgramiv(m_ID, GL_LINK_STATUS, &link_status);
-    LOG_INFO("Link status of program {}: {}", m_ID, 
-             (link_status ? "SUCCESS" : "FAILED"));
+    const char* lnk_status = (link_status ? "SUCCESS" : "FAILED");
+    core::logging::info("Link status of program", VAR(m_ID), VAR(lnk_status));
 
     if (link_status != GL_TRUE || validate_status != GL_TRUE) {
         GLint log_length = 0;
@@ -57,26 +58,26 @@ bool Program::is_valid() const {
             GLsizei written = 0;
             glGetProgramInfoLog(m_ID, log_length, &written, log.data());
             log.resize(static_cast<size_t>(written));
-            LOG_ERROR("Program {} failed: {}", m_ID, log);
+            core::logging::error("Program failed", VAR(m_ID), VAR(log));
         }
         return false;
     }
 
     GLint active_attribs = 0;
     glGetProgramiv(m_ID, GL_ACTIVE_ATTRIBUTES, &active_attribs);
-    LOG_INFO("Active attributes in program {}: {}", m_ID, active_attribs);
+    core::logging::info("Active attributes in program", VAR(m_ID), VAR(active_attribs));
 
     GLint active_uniforms = 0;
     glGetProgramiv(m_ID, GL_ACTIVE_UNIFORMS, &active_uniforms);
-    LOG_INFO("Active uniforms in program {}: {}", m_ID, active_uniforms);
+    core::logging::info("Active uniforms in program", VAR(m_ID), VAR(active_uniforms));
 
     GLint uniform_max_len = 0;
     glGetProgramiv(m_ID, GL_ACTIVE_UNIFORM_MAX_LENGTH, &uniform_max_len);
-    LOG_INFO("Max uniform name length in program {}: {}", m_ID, uniform_max_len);
+    core::logging::info("Max uniform name length in program", VAR(m_ID), VAR(uniform_max_len));
 
     GLint attached = 0;
     glGetProgramiv(m_ID, GL_ATTACHED_SHADERS, &attached);
-    LOG_INFO("Attached shaders in program {}: {}", m_ID, attached);
+    core::logging::info("Attached shaders in program", VAR(m_ID), VAR(attached));
 
     return true;
 }

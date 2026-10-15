@@ -4,7 +4,6 @@
 #include "Texture.hpp"
 #include "VertexArray.hpp"
 #include "VertexLayout.hpp"
-#include "debug.hpp"
 #include <cstddef>
 #include <filesystem>
 #include <optional>
@@ -12,7 +11,8 @@
 #include <utility>
 #include <vector>
 #include <Types.hpp>
-#include <utils.hpp>
+#include <core/logging.hpp>
+#include <core/common.hpp>
 
 #include <tiny_obj_loader.h>
 

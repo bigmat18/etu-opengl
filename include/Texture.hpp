@@ -4,7 +4,8 @@
 #include <Types.hpp>
 #include <filesystem>
 #include <utility>
-#include <utils.hpp>
+#include <core/logging.hpp>
+#include <core/common.hpp>
 
 #include <stb_image.h>
 #include <vector>
@@ -65,7 +66,7 @@ public:
     [[nodiscard("Close the parameter adding")]] 
     inline Texture<T>& add(GLenum pname, GLfloat param) {
         glTexParameteri(T, pname, param);
-        LOG_INFO("Texture {} set parameter: {} = {}", m_ID, pname, param);
+        core::logging::info("Texture set parameter", VAR(m_ID), VAR(pname), VAR(param));
         return *this;
     }
 

@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.26)
 set(EXAMPLE_NAME 01-hello-triangle)
 
 project(etu-opengl-example-${EXAMPLE_NAME})
-set(CMAKE_CXX_STANDARD 23)
+set(CMAKE_CXX_STANDARD 26)
 
 file(GLOB_RECURSE CPP_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp)
 add_executable(${EXAMPLE_NAME} ${CPP_SOURCES})

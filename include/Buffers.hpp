@@ -1,19 +1,20 @@
 #pragma once
 
-#include "logging.hpp"
 #include <utility>
 #include <vector>
+#include <string_view>
 #include <glad/glad.h>
 
 #include <VertexLayout.hpp>
 #include <Types.hpp>
-#include <utils.hpp>
+#include <core/logging.hpp>
+#include <core/common.hpp>
 
 namespace etugl {
 
 template <GLenum type, typename T>
 class Buffer {
-    static constexpr std::string name = 
+    static constexpr std::string_view name = 
         (type == GL_ARRAY_BUFFER ? "VertexBuffer" : "IndexBuffer"); 
     u32 m_ID = 0;
 
@@ -23,7 +24,7 @@ public:
         glGenBuffers(1, &m_ID);
 
         if (data.empty())
-            LOG_WARN("{} {} created with empty data", name, m_ID);
+            core::logging::warn("Buffer created with empty data", VAR(name), VAR(m_ID));
         glBindBuffer(type, m_ID);
         glBufferData(type, data.size() * sizeof(T), 
                      data.data(), GL_STATIC_DRAW);
@@ -31,11 +32,11 @@ public:
         if(glGetError() != GL_NO_ERROR) {
             u32 id = m_ID;
             glDeleteBuffers(1, &m_ID);
-            LOG_ERROR("{} {} creation: FAILED", name, m_ID);
+            core::logging::error("Buffer creation: FAILED", VAR(name), VAR(id));
         }
 
         glBindBuffer(type, 0);
-        LOG_INFO("{} {} create: SUCCESS", name, m_ID); 
+        core::logging::info("Buffer create: SUCCESS", VAR(name), VAR(m_ID)); 
     };
 
     Buffer(const Buffer& other) = delete;
@@ -56,7 +57,7 @@ public:
     ~Buffer() {
         u32 id = m_ID;
         glDeleteBuffers(1, &m_ID);
-        LOG_INFO("{} {} destroy: SUCCESS", name, m_ID); 
+        core::logging::info("Buffer destroy: SUCCESS", VAR(name), VAR(id)); 
     }
 
     inline void bind() const { glBindBuffer(type, m_ID); };

@@ -1,6 +1,7 @@
 #include "Buffers.hpp"
 #include "VertexLayout.hpp"
-#include "logging.hpp"
+#include <core/logging.hpp>
+#include <core/common.hpp>
 #include <VertexArray.hpp>
 #include <cstddef>
 #include <vector>
@@ -20,7 +21,7 @@ VertexArray::VertexArray(const VertexBuffer& vbo,
     ebo.bind();
 
     glBindVertexArray(0);
-    LOG_INFO("VertexArray {} create: SUCCESS", m_ID);
+    core::logging::info("VertexArray create: SUCCESS", VAR(m_ID));
 }
 
 VertexArray::VertexArray(const std::vector<float>& vertices,
@@ -38,14 +39,14 @@ VertexArray::VertexArray(const std::vector<float>& vertices,
     m_EBO->bind();
 
     glBindVertexArray(0);
-    LOG_INFO("VertexArray {} create: SUCCESS", m_ID);
+    core::logging::info("VertexArray create: SUCCESS", VAR(m_ID));
 }
 
 
 VertexArray::~VertexArray() {
     u32 id = m_ID;
     glDeleteVertexArrays(1, &m_ID);
-    LOG_INFO("VertexArray {} destroy: SUCCESS", id);
+    core::logging::info("VertexArray destroy: SUCCESS", VAR(id));
 }
 
 }
