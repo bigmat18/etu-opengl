@@ -70,6 +70,7 @@
               stb
               coreUtils
               glad
+              nlohmann_json
             ];
 
             shellHook = ''
@@ -80,8 +81,11 @@
               ln -sfn "${pkgs.stb}" external/stb
               ln -sfn "${coreUtils}" external/cpp-core-utils
               ln -sfn "${pkgs.glfw}" external/glfw
+              ln -sfn "${pkgs.nlohmann_json}" external/nlohmann_json
               echo "etu-opengl env ready (external/ symlinks populated)"
-              exec zsh
+              if [[ $- == *i* ]]; then
+                exec zsh
+              fi
             '';
           };
         }
