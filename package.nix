@@ -23,7 +23,11 @@ stdenv.mkDerivation {
     pkg-config
   ];
 
-  buildInputs = [
+  propagatedNativeBuildInputs = [
+    pkg-config
+  ];
+
+  propagatedBuildInputs = [
     glfw
     libGL
     glm

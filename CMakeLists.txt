@@ -88,6 +88,8 @@ file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/etu-openglConfig.cmake"
      find_dependency(glm)
      find_dependency(tinyobjloader)
      find_dependency(cpp-core-utils)
+     find_dependency(PkgConfig)
+     pkg_check_modules(STB REQUIRED IMPORTED_TARGET stb)
      include(\"\${CMAKE_CURRENT_LIST_DIR}/etu-openglTargets.cmake\")"
 )
 
