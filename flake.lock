@@ -10,11 +10,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1791633893,
-        "narHash": "sha256-hz+WwzF6ybqx8LA79N9hztGCDlfiMkkyRpl2HwId2sU=",
+        "lastModified": 1792682008,
+        "narHash": "sha256-WPUzTNGLL78NpEWay8CJX036goqJuGTgUorLFeAxdMU=",
         "owner": "bigmat18",
         "repo": "cpp-core-utils",
-        "rev": "16ae26e6617eeb80056d706827e2693e662d9ba8",
+        "rev": "10d8703a736ba7cde41f55103d34674790de1bd6",
         "type": "github"
       },
       "original": {
